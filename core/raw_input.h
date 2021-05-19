@@ -145,47 +145,57 @@ class iinput {
 public:
     typedef raw_input_keys  key;
 public:
-    bool            is_key_pressed( key dik );
+    virtual void    attach_input() = 0;
 
-    virtual void    on_click( key dik ); // Генерируется, когда пользователь щёлкнул по форме.
+    virtual void    detach_input() = 0;
 
-    virtual void    on_dbl_click( key dik ); // Генерируется, когда пользователь дважды щёлкнул по окну.
+    virtual bool    is_attached() = 0;
 
-    virtual void    on_key_down( key dik ); // Генерируется, когда нажата клавиша на клавиатуре.;
+    //virtual bool    on_click( key ) { return false; } // Генерируется, когда пользователь щёлкнул по форме.
 
-    virtual void    on_key_press( key dik ); // Генерируется, когда нажата и отпущена клавиша на клавиатуре.
+    //virtual bool    on_dbl_click( key ) { return false; } // Генерируется, когда пользователь дважды щёлкнул по окну.
 
-    virtual void    on_key_up( key dik ); // Генерируется, когда отпущена клавиша на клавиатуре.
+    virtual bool    on_key_down( key ) { return false; } // Генерируется, когда нажата клавиша на клавиатуре.;
 
-    virtual void    on_mouse_down( key dik ); // Генерируется, когда нажата кнопка мыши.
+    //virtual bool    on_key_press( key ) { return false; } // Генерируется, когда нажата и отпущена клавиша на клавиатуре.
 
-    virtual void    on_mouse_move( const vec2 &move ); // Генерируется, когда двигается мышка.
+    virtual bool    on_key_up( key ) { return false; } // Генерируется, когда отпущена клавиша на клавиатуре.
 
-    virtual void    on_mouse_up( key dik ); // Генерируется, когда отпускается кнопка мыши.
+    virtual bool    on_mouse_down( key ) { return false; } // Генерируется, когда нажата кнопка мыши.
 
-    virtual void    on_mouse_whell( float whell ); // OnMouseWheel Генерируется колёсиком мыши.
+    virtual bool    on_mouse_move( const vec2& ) { return false; } // Генерируется, когда двигается мышка.
+
+    virtual bool    on_mouse_up( key ) { return false; } // Генерируется, когда отпускается кнопка мыши.
+
+    virtual bool    on_mouse_whell( float ) { return false; } // OnMouseWheel Генерируется колёсиком мыши.
 
 };
 
-/* singleton object */
-class raw_input {
-    typedef unsigned char  key;
+/* raw input */
+class raw_input : public iinput {
 public:
+    virtual void        attach_input() override;
+
+    virtual void        detach_input() override;
+
+    virtual bool        is_attached() override;
+
     static void         initialize( whandle_t handle );
 
     static bool         is_key_pressed( key dik );
-    static const vec2   &get_mouse_position();
 
-    static void         lock_mouse();
-    static void         unlock_mouse();
     static void         process_input( LPARAM hRawInput );
 private:
-    static vec2         mouseDelta;
     static bool         keysPressed[256];
     static bool         isInit;
-
-    //RECT cachedWindowRect;
+    bool                attached{false};
+    //static vector<iinput*>  focusStack;
 };
 
-} /* namespace core */
+/* raw_input::is_attached */
+inline bool raw_input::is_attached() {
+    return attached;
+}
+
+} /* namespace input */
 } /* namespace engine */
