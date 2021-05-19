@@ -3,7 +3,7 @@
 #include <hidusage.h>
 #include <iostream>
 namespace engine {
-namespace core {
+namespace input {
 
 vec2 raw_input::mouseDelta;
 bool raw_input::keysPressed[256];

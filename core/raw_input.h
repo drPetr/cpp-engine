@@ -2,7 +2,7 @@
 #include <core/types.h>
 #include <core/math.h>
 namespace engine {
-namespace core {
+namespace input {
 
 using namespace engine::math;
 
