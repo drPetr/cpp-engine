@@ -2,6 +2,7 @@
 #include "vec4.h"
 #include "vec3.h"
 #include <utility>
+#include <core/assert.h>
 namespace engine {
 namespace math {
 
@@ -53,11 +54,13 @@ extern const mat4 MAT4_IDENTITY;
 
 /* mat4::operator[] */
 inline const vec4 &mat4::operator[]( int index ) const {
+    assert(index >= 0 && index < 4);
     return (&x)[ index ];
 }
 
 /* mat4::operator[] */
 inline vec4 &mat4::operator[]( int index ) {
+    assert(index >= 0 && index < 4);
     return (&x)[ index ];
 }
 

@@ -1,4 +1,5 @@
 #pragma once
+#include <core/assert.h>
 namespace engine {
 namespace math {
 
@@ -28,11 +29,13 @@ extern const vec4 VEC4_ZERO;
 
 /* vec4::operator[] */
 inline vec4::type vec4::operator[]( int index ) const {
+    assert(index >= 0 && index < 4);
     return (&x)[ index ];
 }
 
 /* vec4::operator[] */
 inline vec4::type &vec4::operator[]( int index ) {
+    assert(index >= 0 && index < 4);
     return (&x)[ index ];
 }
 

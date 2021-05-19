@@ -1,5 +1,6 @@
 #pragma once
 #include "base_math.h"
+#include <core/assert.h>
 namespace engine {
 namespace math {
 
@@ -39,11 +40,13 @@ extern const vec2 VEC2_ZERO;
 
 /* vec2::operator[] */
 inline vec2::type vec2::operator[]( int index ) const {
+    assert(index >= 0 && index < 2);
     return (&x)[ index ];
 }
 
 /* vec2::operator[] */
 inline vec2::type &vec2::operator[]( int index ) {
+    assert(index >= 0 && index < 2);
     return (&x)[ index ];
 }
 
