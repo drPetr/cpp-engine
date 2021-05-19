@@ -1,9 +1,7 @@
 #pragma once
+#include <cmath>
 namespace engine {
 namespace math {
-
-#include <cmath>
-
 
 struct sincos_t {
     sincos_t( float s, float c ) : sin{s}, cos{c} {}
@@ -42,7 +40,6 @@ inline float            floor( float a );
 inline float            ceil( float a );
 inline float            frac( float a );
 inline float            round( float a );
-
 
 
 
