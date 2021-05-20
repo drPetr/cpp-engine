@@ -41,6 +41,7 @@ public:
 };
 
 extern const vec3 VEC3_ZERO;
+extern const vec3 VEC3_ONE;
 
 
 /* vec3::operator[] */
