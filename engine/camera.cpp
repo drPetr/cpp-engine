@@ -2,13 +2,13 @@
 namespace engine {
 using namespace math;
 
+const mat4 MAT4_CAMERA_INITIAL { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 };
+
 /* camera::camera */
 camera::camera( const vec3 &pos, const vec3 &dir, const vec3 &up ) {
     set_position( pos );
     set_direction( dir );
     set_up( up );
-    get_right();
-    get_up();
 }
 
 /* camera::rotate */
@@ -17,39 +17,48 @@ void camera::rotate( const quat &q ) {
     set_up( q * get_up() );
 }
 
-/* camera::set_position */
+/* camera::set_orientation */
+void camera::set_orientation( const vec3 &dir, const vec3 &up ) {
+    this->dir = dir;
+    this->dir.normalize();
+    this->up = up;
+    this->up.normalize();
+    this->right = this->dir.cross( this->up );
+    this->up = this->right.cross( this->dir );
+}
+
+/* camera::set_direction */
 void camera::set_direction( const vec3 &dir ) {
-    direction = dir;
-    direction.normalize();
+    this->dir = dir;
+    this->dir.normalize();
+    /* update right */
+    right = this->dir.cross( up );
+    /* update up */
+    up = right.cross( this->dir );
 }
 
 /* camera::set_up */
 void camera::set_up( const vec3 &up ) {
     this->up = up;
     this->up.normalize();
+    /* update right */
+    right = dir.cross( this->up );
+    /* update up */
+    this->up = right.cross( dir );
 }
 
-/* camera::get_up */
-const vec3 &camera::get_up() {
-    up = right.cross( direction );
-    return up;
-}
-
-/* camera::get_right */
-const vec3 &camera::get_right() {
-    right = direction.cross( up );
-    return right;
-}
-
-/* camera::operator() */
-mat4 &camera::operator()() {
-    get_right();
-    get_up();
+/* camera::get_scale */
+mat4 camera::operator()() {
+    mat4 out(mat);
+    /* scaling */
+    out.x.x *= scale.x;
+    out.y.y *= scale.y;
+    out.z.z *= scale.z;
     /* optimization (multiply camera matrix on position matrix) */
-    out.x.w = right.x * position.x + right.y * position.y + right.z * position.z;
-    out.y.w = up.x * position.x + up.y * position.y + up.z * position.z;
-    out.z.w = direction.x * position.x + direction.y * position.y + direction.z * position.z;
-    return out;
+    out.x.w = right.x * pos.x + right.y * pos.y + right.z * pos.z;
+    out.y.w = up.x * pos.x + up.y * pos.y + up.z * pos.z;
+    out.z.w = dir.x * pos.x + dir.y * pos.y + dir.z * pos.z;
+    return std::move(out);
 }
 
 } /* namespace engine */
