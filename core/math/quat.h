@@ -13,7 +13,7 @@ public:
                     quat();
                     quat( const type x, const type y, const type z, const type w ) :
                             x{x}, y{y}, z{z}, w{w} {}
-                    quat( const vec3 &v, const type w ) : x{v.x}, y{v.y}, z{v.z}, w{w} {}
+                    quat( const vec3 &v, const type angle );
                     quat( const vec4 &v ) : x{v.x}, y{v.y}, z{v.z}, w{v.w} {}
 
     type            operator[]( int index ) const;
@@ -40,6 +40,31 @@ public:
 public:
     type            x, y, z, w;
 };
+
+/* quat::quat */
+inline quat::quat( const vec3 &v, const type angle ) {
+    auto [sin, cos] = sin_cos(angle / 2);
+    auto sqLen( v.x * v.x + v.y * v.y + v.z * v.z );
+    if( sqLen != 1.0 ) {
+        if( sqLen != 0.0 ) {
+            auto inv( sqrt(1.0 / sqLen) * sin );
+            x = v.x * inv;
+            y = v.y * inv;
+            z = v.z * inv;
+            w = cos;
+        } else {
+            x = 0.0;
+            y = 0.0;
+            z = sin;
+            w = cos;
+        }
+    } else {
+        x = v.x * sin;
+        y = v.y * sin;
+        z = v.z * sin;
+        w = cos;
+    }
+}
 
 /* quat::operator[] */
 inline quat::type quat::operator[]( int index ) const {
