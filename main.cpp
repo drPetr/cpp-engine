@@ -10,8 +10,8 @@
 #include <core/types.h>
 #include <renderer/opengl/gl.h>
 #include <core/raw_input.h>
-
-
+#include <engine/camera.h>
+#include <engine/object3d_location.h>
 using namespace engine::math;
 using namespace engine::input;
 
@@ -401,237 +401,87 @@ GLuint make_shader_program( const string &vshName, const string &pshName ) {
 */
 
 
-class transform {
+
+
+
+
+/* local_object 
+* Локальные координаты это координаты вашего объекта измеряемые относительно
+* точки отсчета расположенной там, где начинается сам объект
+* LOCAL SPACE mul (MODEL MATRIX) -> WORLD SPACE
+*/
+class local_object {
 public:
-    typedef float   type;
-public:
-                transform() : 
-                        scale{1.0, 1.0, 1.0}, 
-                        rotation{0.0, 0.0, 0.0},
-                        position{0.0, 0.0, 0.0} {}
-                transform( const vec3 &scale, const vec3 &rotation, const vec3 &position ) :
-                        scale{scale}, rotation{rotation}, position{position} {}
-
-
-    void        set_scale( const vec3 &scale );
-    void        set_scale( const type xScale, const type yScale, const type zScale );
-    void        set_rotation( const vec3 &rotation );
-    void        set_rotation( const type xRotate, const type yRotate, const type zRotate );
-    void        set_position( const vec3 &position );    
-    void        set_position( const type x, const type y, const type z );
-
-    vec3        &get_scale();
-    const vec3  &get_scale() const;
-    vec3        &get_rotation();
-    const vec3  &get_rotation() const;
-    vec3        &get_position();
-    const vec3  &get_position() const;
-
-    mat4        &operator()();
-
-
-private:
-    vec3 scale;
-    vec3 rotation;
-    vec3 position;
-    mat4 out;
 };
 
-/* transform::set_scale */
-void transform::set_scale( const vec3 &scale ) {
-    this->scale = scale;
-}
-
-/* transform::set_scale */
-void transform::set_scale( const type xScale, const type yScale, const type zScale ) {
-    scale = vec3( xScale, yScale, zScale );
-}
-
-/* transform::set_rotation */
-void transform::set_rotation( const vec3 &rotation ) {
-    this->rotation = rotation;
-}
-
-/* transform::set_rotation */
-void transform::set_rotation( const type xRotate, const type yRotate, const type zRotate ) {
-    rotation = vec3( xRotate, yRotate, zRotate );
-}
-
-/* transform::set_position */
-void transform::set_position( const vec3 &position ) {
-    this->position = position;
-}
-
-/* transform::set_position */
-void transform::set_position( const type x, const type y, const type z ) {
-    position = vec3( x, y, z );
-}
-
-/* transform::get_scale */
-vec3 &transform::get_scale() {
-    return scale;
-}
-
-/* transform::get_scale */
-const vec3  &transform::get_scale() const {
-    return scale;
-}
-
-/* transform::get_rotation */
-vec3 &transform::get_rotation() {
-    return rotation;
-}
-
-/* transform::get_rotation */
-const vec3 &transform::get_rotation() const {
-    return rotation;
-}
-
-/* transform::get_position */
-vec3 &transform::get_position() {
-    return position;
-}
-
-/* transform::get_position */
-const vec3 &transform::get_position() const {
-    return position;
-}
-
-/* transform::operator() */
-mat4 &transform::operator()() {
-    out = mat4::translation(position) * 
-        mat4::rotation(rotation) * 
-        mat4::scale(scale);
-    return out;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-class camera {
+/* world_object
+* На следующем шаге локальные координаты преобразуются в координаты мирового
+* пространства, которые по смыслу являются координатами более крупного мира. 
+* Эти координаты измеряются относительно глобальной точки отсчёта, единой для 
+* всех других объектов расположенных в мировом пространстве.
+* WORLD SPACE mul (VIEV MATRIX) -> VIEW SPACE
+*/
+class world_object {
 public:
-                    camera() :
-                            position{0.0, 0.0, 0.0},
-                            direction{0.0, 0.0, 1.0},
-                            up{0.0, 1.0, 0.0},
-                            right{1.0, 0.0, 0.0} {}
 
-                    camera( const vec3 &pos, const vec3 &dir, const vec3 &up );
-
-    void            move( const vec3 &delta );
-    void            rotate( const vec3 &delta );
-
-    void            set_position( const vec3 &position );
-    void            set_direction( const vec3 &direction );
-    void            set_up( const vec3 &up );
-
-    const vec3      &get_position() const;
-    const vec3      &get_direction() const;
-    const vec3      &get_up();
-    const vec3      &get_right();
-
-    mat4            &operator()();
-
-private:
-    vec3        position;   /* camera position */
-    vec3        direction;  /* camera direction */
-    vec3        up;         /* camera up vector */
-    vec3        right;      /* camera right vector */
-    mat4        out;        /* output camera matrix */
 };
 
-/* camera::camera */
-camera::camera( const vec3 &pos, const vec3 &dir, const vec3 &up ) {
-    this->position = pos;
-    this->direction = dir;
-    this->up = up;
-    this->direction.normalize();
-    this->up.normalize();
-    this->right = this->up.cross( this->direction );
-    this->up = this->direction.cross( this->right );
+
+
+class controlled_camera : 
+        public camera, 
+        public input::raw_input {
+public:
+    controlled_camera( const vec3 &pos, const vec3 &dir, const vec3 &up ) :
+            camera( pos, dir, up ) {}
+
+    virtual bool    on_mouse_move( const vec2 &move ) override;
+    mat4            operator()();
+private:
+};
+
+/* controlled_camera::on_mouse_move */
+bool controlled_camera::on_mouse_move( const vec2 &move ) {
+    auto m = move / 500;
+    if( m.x ) {
+        quat q( get_up(), m.x );
+        set_direction( q * get_direction() );
+    }
+    if( m.y ) {
+        quat q( get_right(), m.y );
+        set_direction( q * get_direction() );
+        set_up( q * get_up() );
+
+    }
+    return true;
 }
 
-/* camera::move */
-void camera::move( const vec3 &delta ) {
-    this->position += delta;
+/* controlled_camera::operator() */
+mat4 controlled_camera::operator()() {
+    if( controlled_camera::is_key_pressed(VKRAW_W) ) {
+        move( get_direction() * 0.1 );
+    }
+    if( controlled_camera::is_key_pressed(VKRAW_S) ) {
+        move( -get_direction() * 0.1 );
+    }
+    if( controlled_camera::is_key_pressed(VKRAW_A) ) {
+        move( -get_right() * 0.1 );
+    }
+    if( controlled_camera::is_key_pressed(VKRAW_D) ) {
+        move( get_right() * 0.1 );
+    }
+    if( controlled_camera::is_key_pressed(VKRAW_SHIFT) ) {
+        move( -get_up() * 0.1 );
+    }
+    if( controlled_camera::is_key_pressed(VKRAW_SPACE) ) {
+        move( get_up() * 0.1 );
+    }
+    return camera::operator()();
 }
 
-/* camera::rotate */
-//void camera::rotate( const vec3 &delta ) {
-    //mat4::rotation( delta );
 
-//}
 
-/* camera::set_position */
-void camera::set_position( const vec3 &position ) {
-    this->position = position;
-}
 
-/* camera::set_position */
-void camera::set_direction( const vec3 &direction ) {
-    this->direction = direction;
-    this->direction.normalize();
-}
-
-/* camera::set_up */
-void camera::set_up( const vec3 &up ) {
-    this->up = up;
-    this->up.normalize();
-}
-
-/* camera::get_position */
-const vec3 &camera::get_position() const {
-    return position;
-}
-
-/* camera::get_direction */
-const vec3 &camera::get_direction() const {
-    return direction;
-}
-
-/* camera::get_up */
-const vec3 &camera::get_up() {
-    up = direction.cross( right );
-    return up;
-}
-
-/* camera::get_right */
-const vec3 &camera::get_right() {
-    right = up.cross( direction );
-    return right;
-}
-
-/* camera::operator() */
-mat4 &camera::operator()() {
-    right = up.cross( direction );
-    up = direction.cross( right );
-    out.x.x = right.x;
-    out.x.y = right.y;
-    out.x.z = right.z;
-    out.x.w = 0.0;
-    out.y.x = up.x;
-    out.y.y = up.y;
-    out.y.z = up.z;
-    out.y.w = 0.0;
-    out.z.x = direction.x;
-    out.z.y = direction.y;
-    out.z.z = direction.z;
-    out.z.w = 0.0;
-    out.w.x = 0.0;
-    out.w.y = 0.0;
-    out.w.z = 0.0;
-    out.w.w = 1.0;
-    out *= mat4::translation( -position );
-    return out;
-}
 
 } /* namespace engine */
 
@@ -673,6 +523,15 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
     auto gWorldLocation = glGetUniformLocation( shProgram, "gWorld" );
     assert( gWorldLocation != static_cast<int>(0xFFFFFFFF) );
 
+
+    GLuint axesVbo[3];
+    vec3 xAxis[]{ {0.0, 0.0, 0.0}, {5.0, 0.0, 0.0} };
+    vec3 yAxis[]{ {0.0, 0.0, 0.0}, {0.0, 5.0, 0.0} };
+    vec3 zAxis[]{ {0.0, 0.0, 0.0}, {0.0, 0.0, 5.0} };
+    
+
+
+    
 
     vec3 v[] {
         /*{0.5f,  0.5f, 0.0f},  // Верхний правый угол
@@ -719,7 +578,7 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
         glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
         glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW );
 
-        glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), NULL );
+        glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), NULL );
         glEnableVertexAttribArray(0);
     }
     glBindVertexArray(0);
@@ -739,8 +598,10 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
     static float fscale = 0.0;
     static float fpos = 0.0;
     static float frot = 0.0;
-    transform tr;
-    camera cam;
+    object3d_location loc;
+    object3d_location loc2;
+    controlled_camera cam( vec3(0,0,0), vec3(0,1,0), vec3(0,0,1) );
+    cam.attach_input();
 
     //cam.set_position( vec3( 0, -5, 0 ) );
 
@@ -752,7 +613,11 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
 
 
     while( appIsRun ) {
-        if( prev != raw_input::is_key_pressed(0x5A) ) {
+        if( raw_input::is_key_pressed(VKRAW_ESCAPE) ) {
+            appIsRun = false;
+        }
+
+        if( prev != raw_input::is_key_pressed(VKRAW_Q) ) {
             std::cout <<"change" << std::endl;
             if( change ) {
                 pause = !pause;
@@ -766,7 +631,7 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
                 //w.set_title( "run" );
             }
         }
-        prev = raw_input::is_key_pressed(0x5A);
+        prev = raw_input::is_key_pressed(VKRAW_Q);
 
 
         if( pause ) {
@@ -779,26 +644,7 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
         }
 
 
-        if( raw_input::is_key_pressed(VKRAW_W) ) {
-            /*W key*/
-            auto step = cam.get_direction() * stepSize;
-            cam.move( step );
-        }
-        if( raw_input::is_key_pressed(VKRAW_A) ) {
-            /*A key*/
-            auto step = -cam.get_right() * stepSize;
-            cam.move( step );
-        }
-        if( raw_input::is_key_pressed(VKRAW_S) ) {
-            /*S key*/
-             auto step = -cam.get_direction() * stepSize;
-             cam.move( step );
-        }
-        if( raw_input::is_key_pressed(VKRAW_D) ) {
-            /*D key*/
-            auto step = cam.get_right() * stepSize;
-            cam.move( step );
-        }
+        
         
 
         auto msec = timer.time_sec();
@@ -812,17 +658,26 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
         frot += 3.14159265358979 * msec *0.5;
 
         auto [sin, cos] = engine::math::sin_cos( fpos );
-        tr.set_scale( 0.2,  0.2,  0.2 );
-        tr.set_position( sin * 3.0, cos * 3.0, 10.0 );
-        tr.set_rotation( frot, frot * 0.5, frot * 0.25 );
+        loc.set_scale( vec3(0.5,  0.5,  0.5) );
+        loc.set_position( vec3(0.0, 10.0, 0.0) );
+
+        loc2.set_scale( vec3(1.0,  1.0,  1.0) );
+        loc2.set_position( vec3(10.0, 0.0, 0.0) );
+        
 
 
         //cam.move( vec3(cos * 0.1, sin * 0.1, 0) );
-        auto perspective = mat4::perspective( pi / 180.0 * 60.0, w.get_aspect(), 1, 1000 );
-        auto toShader = perspective * cam() * tr();
+        auto perspective = mat4::perspective( pi / 180.0 * 60.0, w.get_aspect(), 0.1, 1000 );
 
+        
+
+        //std::cout << "[" << ccc.z.x << ", " << ccc.z.y << ", " << ccc.z.z << "]" << std::endl;
 
         glClear( GL_COLOR_BUFFER_BIT );
+
+
+
+        auto toShader = perspective * cam() * loc();
         /* send world matrix to shader */
         glUniformMatrix4fv( gWorldLocation, 1, GL_TRUE, toShader.get_ptr() );
 
@@ -831,6 +686,12 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
         glDrawElements( GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0 );
         glBindVertexArray( 0 );
 
+        toShader = perspective * cam() * loc2();
+        glUniformMatrix4fv( gWorldLocation, 1, GL_TRUE, toShader.get_ptr() );
+        glUseProgram( shProgram );
+        glBindVertexArray( vao );
+        glDrawElements( GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0 );
+        glBindVertexArray( 0 );
 
 
 
