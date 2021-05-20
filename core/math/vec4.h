@@ -1,4 +1,5 @@
 #pragma once
+#include "vec3.h"
 #include <core/assert.h>
 namespace engine {
 namespace math {
@@ -15,6 +16,7 @@ public:
     type            &operator[]( int index );
 
     void            zero();
+    vec3            &vec3();
 
     const type      *get_ptr() const;
     type            *get_ptr();
@@ -42,6 +44,11 @@ inline vec4::type &vec4::operator[]( int index ) {
 /* vec4::zero */
 inline void vec4::zero() {
     *this = VEC4_ZERO;
+}
+
+/* vec4::vec3 */
+inline vec3 &vec4::vec3() {
+    return *(reinterpret_cast<engine::math::vec3*>(&x));
 }
 
 /* vec4::get_ptr */
