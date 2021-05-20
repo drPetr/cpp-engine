@@ -2,6 +2,7 @@
 #include <core/assert.h>
 #include "vec3.h"
 #include "vec4.h"
+#include "mat4.h"
 namespace engine {
 namespace math {
 
@@ -34,12 +35,15 @@ public:
     quat            inverse() const;
     type            length() const;
     type            normalize();
+    mat4            to_mat4();
 
     const type      *get_ptr() const;
     type            *get_ptr();
 public:
     type            x, y, z, w;
 };
+
+extern const quat QUAT_ZERO;
 
 /* quat::quat */
 inline quat::quat( const vec3 &v, const type angle ) {
