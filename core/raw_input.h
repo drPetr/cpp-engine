@@ -188,8 +188,8 @@ public:
 private:
     static bool         keysPressed[256];
     static bool         isInit;
+    static vector<iinput*>  focusStack;
     bool                attached{false};
-    //static vector<iinput*>  focusStack;
 };
 
 /* raw_input::is_attached */

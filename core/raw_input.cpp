@@ -7,7 +7,7 @@ namespace input {
 
 bool raw_input::keysPressed[256];
 bool raw_input::isInit {false};
-vector<iinput*>  focusStack;
+vector<iinput*> raw_input::focusStack;
 
 /* raw_input::attach_input */
 void raw_input::attach_input() {
