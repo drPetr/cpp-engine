@@ -15,6 +15,7 @@ camera::camera( const vec3 &pos, const vec3 &dir, const vec3 &up ) {
 void camera::rotate( const quat &q ) {
     set_direction( q * get_direction() );
     set_up( q * get_up() );
+    needUpdate = true;
 }
 
 /* camera::set_orientation */
@@ -25,6 +26,7 @@ void camera::set_orientation( const vec3 &dir, const vec3 &up ) {
     this->up.normalize();
     this->right = this->dir.cross( this->up );
     this->up = this->right.cross( this->dir );
+    needUpdate = true;
 }
 
 /* camera::set_direction */
@@ -35,6 +37,7 @@ void camera::set_direction( const vec3 &dir ) {
     right = this->dir.cross( up );
     /* update up */
     up = right.cross( this->dir );
+    needUpdate = true;
 }
 
 /* camera::set_up */
@@ -45,20 +48,26 @@ void camera::set_up( const vec3 &up ) {
     right = dir.cross( this->up );
     /* update up */
     this->up = right.cross( dir );
+    needUpdate = true;
 }
 
 /* camera::get_scale */
 mat4 camera::operator()() {
-    mat4 out(mat);
-    /* scaling */
-    out.x.x *= scale.x;
-    out.y.y *= scale.y;
-    out.z.z *= scale.z;
-    /* optimization (multiply camera matrix on position matrix) */
-    out.x.w = right.x * pos.x + right.y * pos.y + right.z * pos.z;
-    out.y.w = up.x * pos.x + up.y * pos.y + up.z * pos.z;
-    out.z.w = dir.x * pos.x + dir.y * pos.y + dir.z * pos.z;
-    return std::move(out);
+    if( needUpdate ) {
+        out = mat;
+        /* scaling */
+        out.x.x *= scale.x;
+        out.y.y *= scale.y;
+        out.z.z *= scale.z;
+        /* optimization (multiply camera matrix on position matrix) */
+        out.x.w = right.x * pos.x + right.y * pos.y + right.z * pos.z;
+        out.y.w = up.x * pos.x + up.y * pos.y + up.z * pos.z;
+        out.z.w = dir.x * pos.x + dir.y * pos.y + dir.z * pos.z;
+        out = projectionMat * out;
+        needUpdate = false;
+        return out;
+    }
+    return out;
 }
 
 } /* namespace engine */

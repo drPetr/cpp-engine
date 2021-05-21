@@ -11,6 +11,7 @@ public:
                     camera( const vec3 &pos, const vec3 &dir, const vec3 &up );
     void            move( const vec3 &delta );
     void            rotate( const quat &q );
+    void            set_perspective_projection( float fov, float aspect, float nearPlane, float farPlane );
     void            set_orientation( const vec3 &dir, const vec3 &up );
     void            set_direction( const vec3 &dir );
     const vec3      &get_direction() const;
@@ -24,17 +25,27 @@ public:
 
     mat4            operator()();
 private:
+    mat4            out{MAT4_IDENTITY};     /* out camera matrix */
+    mat4            projectionMat;          /* ortohonal or perspective projection */
     mat4            mat{MAT4_CAMERA_INITIAL}; /* transform matrix */
     vec3            &right{mat.x.vec3()};   /* camera right vector */
     vec3            &up{mat.y.vec3()};      /* right normal vector */
     vec3            &dir{mat.z.vec3()};     /* camera direction */
     vec3            pos{VEC3_ZERO};         /* camera position */
     vec3            scale{1.0, 1.0, 1.0};   /* scale camera */
+    bool            needUpdate{true};       /* need update out */
 };
 
 /* camera::move */
 inline void camera::move( const vec3 &delta ) {
     pos -= delta;
+    needUpdate = true;
+}
+
+/* camera::set_perspective_projection */
+inline void camera::set_perspective_projection( float fov, float aspect, float nearPlane, float farPlane ) {
+    projectionMat = mat4::perspective( fov, aspect, nearPlane, farPlane );
+    needUpdate = true;
 }
 
 /* camera::get_direction */
@@ -55,6 +66,7 @@ inline const vec3 &camera::get_right() const {
 /* camera::set_position */
 inline void camera::set_position( const vec3 &pos ) {
     this->pos = -pos;
+    needUpdate = true;
 }
 
 /* camera::get_position */
@@ -65,6 +77,7 @@ inline const vec3 camera::get_position() const {
 /* camera::set_scale */
 inline void camera::set_scale( const vec3 &scale ) {
     this->scale = scale;
+    needUpdate = true;
 }
 
 /* camera::get_scale */
