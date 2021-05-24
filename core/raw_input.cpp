@@ -45,7 +45,7 @@ void raw_input::initialize( whandle_t handle ) {
             devieMouse.dwFlags = 0;
             devieMouse.hwndTarget = handle;
             auto success( RegisterRawInputDevices( &devieMouse, 1, sizeof(devieMouse) ) );
-            assert( success );
+            verify( success );
         }
         /* initialize keybord input */
         {
@@ -54,7 +54,7 @@ void raw_input::initialize( whandle_t handle ) {
             devieKeyboard.dwFlags = /*RIDEV_NOLEGACY | RIDEV_NOHOTKEYS*/ 0;
             devieKeyboard.hwndTarget = handle;
             auto success( RegisterRawInputDevices( &devieKeyboard, 1, sizeof(devieKeyboard) ) );
-            assert( success );
+            verify( success );
         }
         isInit = true;
     } else if( !handle && isInit ) {
@@ -65,7 +65,7 @@ void raw_input::initialize( whandle_t handle ) {
             devieMouse.dwFlags = RIDEV_REMOVE;
             devieMouse.hwndTarget = handle;
             auto success = RegisterRawInputDevices( &devieMouse, 1, sizeof(devieMouse) );
-            assert( success );
+            verify( success );
         }
         /* delete keybord input */
         {
@@ -74,7 +74,7 @@ void raw_input::initialize( whandle_t handle ) {
             devieKeyboard.dwFlags = RIDEV_REMOVE;
             devieKeyboard.hwndTarget = handle;
             auto success = RegisterRawInputDevices( &devieKeyboard, 1, sizeof(devieKeyboard) );
-            assert( success );
+            verify( success );
         }
         isInit = false;
     }
@@ -92,7 +92,7 @@ void raw_input::process_input( LPARAM hRawInput ) {
     RAWINPUT *rawInput( reinterpret_cast<RAWINPUT*>(buffer) );
     UINT rawInputSize( static_cast<UINT>(sizeof(buffer)) );
     auto bytes( GetRawInputData( (HRAWINPUT)hRawInput, RID_INPUT, rawInput, &rawInputSize, sizeof(RAWINPUTHEADER)) );
-    assert( bytes != 0x80000000 );
+    verify( bytes != 0x80000000 );
 
     switch( RAWINPUTHEADER &header = rawInput->header; header.dwType ) {
         case RIM_TYPEMOUSE: {
