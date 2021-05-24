@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include <core/assert.h>
 namespace engine {
 namespace math {
 
@@ -40,7 +41,8 @@ inline float            floor( float a );
 inline float            ceil( float a );
 inline float            frac( float a );
 inline float            round( float a );
-
+inline float            clamp( float val, float min, float max );
+inline float            clamp( int val, int min, int max );
 
 
 /* min */
@@ -81,8 +83,11 @@ inline T squr( T a ) {
 
 /* abs */
 inline float abs( float a ) {
-    unsigned int bits = (*reinterpret_cast<unsigned int*>(&a)) & 0x7fffffff;
-    return *reinterpret_cast<float*>(&bits);
+    void *ptr = reinterpret_cast<void*>(&a);
+    unsigned int bits = (*reinterpret_cast<unsigned int*>(ptr));
+    bits &= 0x7fffffff;
+    ptr = reinterpret_cast<void*>(&bits);
+    return *reinterpret_cast<float*>(ptr);
 }
 
 /* abs 
@@ -186,6 +191,30 @@ inline float frac( float a ) {
 /* round */
 inline float round( float a ) {
     return floorf( a + 0.5 );
+}
+
+/* clamp */
+inline float clamp( float val, float min, float max ) {
+    assert( min <= max );
+    if( val < min ) {
+        return min;
+    }
+    if( val > max ) {
+        return max;
+    }
+    return val;
+}
+
+/* clamp */
+inline float clamp( int val, int min, int max ) {
+    assert( min <= max );
+    if( val < min ) {
+        return min;
+    }
+    if( val > max ) {
+        return max;
+    }
+    return val;
 }
 
 } /* namespace math */
