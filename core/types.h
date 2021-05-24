@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <memory>
 #include <windows.h>
 
 namespace engine {
@@ -21,6 +22,20 @@ public:
     string( const std::istreambuf_iterator<char> &begIt,
             const std::istreambuf_iterator<char> &endIt ) : self( begIt, endIt ) {}
 };
+
+template <class T>
+class shared_ptr : public std::shared_ptr<T> {
+    typedef ::std::shared_ptr<T>  self;
+public:
+    explicit shared_ptr( T *ptr ) : self( ptr ) {}
+    shared_ptr( const shared_ptr &ref ) noexcept : self( ref ) {}
+    shared_ptr( shared_ptr &&ref ) noexcept : self( ref ) {}
+};
+
+
+
+
+
 
 typedef ::std::istream      istream;
 typedef ::std::ostream      ostream;
