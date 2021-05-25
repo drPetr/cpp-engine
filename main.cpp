@@ -2,16 +2,19 @@
 #include <windows.h>
 #include <wingdi.h>
 #include <cmath>
-
+#include <memory>
 #include <core/assert.h>
 #include <core/timer.h>
 #include <core/math.h>
 #include <core/file_system.h>
 #include <core/types.h>
 #include <renderer/opengl/gl.h>
-#include <core/raw_input.h>
-#include <engine/camera.h>
 #include <engine/object3d_location.h>
+#include <engine/mesh.h>
+#include <renderer/shader.h>
+#include <engine/controlled_camera.h>
+#include <core/common.h>
+#include <engine/onoff_key.h>
 using namespace engine::math;
 using namespace engine::input;
 
@@ -62,10 +65,10 @@ public:
     float           get_aspect();
 
 protected:
-    string          title = {"window"};
+    string          title = {"Window"};
     bool            isCreate = {false};
     whandle_t       handle = {nullptr};
-    rect2d          rect = {{0, 0}, {854, 480}};
+    rect2d          rect = {{0, 0}, {1366, 768}};
 };
 
 
@@ -226,34 +229,25 @@ void window::process_messages() {
 
 
 
-
-
-
-
-
-/*
-::SetCursor( hcurSave );
-::SetFocus( win32.hWnd );
-*/
-
-class irender {
-public:
-    virtual             ~irender() {}
-    virtual void        display_frame() = 0;
-private:
+struct mesh_binding {
+    bool        isInit{false};
+    GLuint      vbo{0};     /* GL vertex buffer object */
+    GLuint      ibo{0};     /* GL index buffer object */
+    GLuint      vao{0};     /* GL vertex array object */
+    GLenum      indexType{0};    
 };
 
-
-
-
-class opengl_render : public irender {
+class opengl_render {
 public:
                         opengl_render( const whandle_t handle );
-    virtual             ~opengl_render();
+                        ~opengl_render();
+    void                clear();  
+    void                bind_mesh( basic_mesh &m );
+    void                draw_mesh( basic_mesh &m );
+    void                display_frame();
 
-    virtual void        display_frame() override;
+    static GLenum       primitive_type_to_gl_type( primitive_type type );
 private:
-    vector<GLuint>      shaders;
     HDC                 hdc;
     HGLRC               hrc;
     whandle_t           hWnd;
@@ -279,6 +273,8 @@ opengl_render::opengl_render( const whandle_t handle ) {
     /* create and enable the render context (RC) */
     hrc = wglCreateContext( hdc );
     wglMakeCurrent( hdc, hrc );
+    /* set default clear color */
+    glClearColor( 1.0f, 1.0f, 1.0f, 0.0f );
 }
 
 /* opengl_render::~opengl_render */
@@ -288,195 +284,135 @@ opengl_render::~opengl_render() {
     ::ReleaseDC( hWnd, hdc );
 }
 
+/* opengl_render::clear */
+void opengl_render::clear() {
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+}
+
+/* opengl_render::bind_mesh */
+void opengl_render::bind_mesh( basic_mesh &m ) {
+    mesh_binding *b = reinterpret_cast<mesh_binding*>(m.get_extra_ptr());
+    if( !(b->isInit) ) {
+        assert( b->vbo == 0 );
+        assert( b->ibo == 0 );
+        assert( b->vao == 0 );
+        const auto &vertPresent( m.get_present_vertex() );
+        const auto &indPresent( m.get_present_index() );
+        /* gen buffers and fill buffer data */
+        glGenVertexArrays( 1, &b->vao );
+        glBindVertexArray( b->vao );
+        /* bind vertex buffer object */
+        glGenBuffers( 1, &b->vbo );
+        glBindBuffer( GL_ARRAY_BUFFER, b->vbo );
+        glBufferData( GL_ARRAY_BUFFER, 
+                vertPresent.vertexSize * m.get_vertices_number(), 
+                m.get_vertex_ptr(0), GL_STATIC_DRAW );
+        /* present vertex attributes */
+        for( int i = 0; i < vertPresent.numAttrib; i++ ) {
+            auto offset = vertPresent.attributes[i].offset;
+            switch( vertPresent.attributes[i].type ) {
+                case PRESENT_VERTEX_ATTRIB_XYZ:
+                    glVertexAttribPointer( i, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), reinterpret_cast<void*>(offset) );
+                    break;
+                case PRESENT_VERTEX_ATTRIB_UV:
+                    glVertexAttribPointer( i, 2, GL_FLOAT, GL_FALSE, sizeof(vec2), reinterpret_cast<void*>(offset) );
+                    break;
+                case PRESENT_VERTEX_ATTRIB_MAX_NUMBER:
+                    assert(0);
+                    break;
+            }
+        }
+        /* present index attributes */
+        if( indPresent != PRESENT_INDEX_NO_INDEX ) {
+            int indexBytes = 0;
+            /* set gl index type */
+            switch( indPresent ) {
+                case PRESENT_INDEX_32BITS:
+                    b->indexType = GL_UNSIGNED_INT;
+                    indexBytes = 4;
+                    break;
+                case PRESENT_INDEX_16BITS:
+                    b->indexType = GL_UNSIGNED_SHORT;
+                    indexBytes = 2;
+                    break;
+                case PRESENT_INDEX_8BITS:
+                    b->indexType = GL_UNSIGNED_BYTE;
+                    indexBytes = 1;
+                    break;
+                default:
+                    assert(0);
+            }
+            /* bind index buffer object */
+            glGenBuffers( 1, &b->ibo );
+            glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, b->ibo );
+            glBufferData( GL_ELEMENT_ARRAY_BUFFER, 
+                    indexBytes * m.get_indices_number(), 
+                    m.get_index_ptr(0), GL_STATIC_DRAW );
+        }
+        glBindVertexArray( 0 );
+        b->isInit = true;
+    }
+    assert( b->vao != 0 );
+    glBindVertexArray( b->vao );
+}
+
+/* opengl_render::draw_mesh */
+void opengl_render::draw_mesh( basic_mesh &m ) {
+    bind_mesh( m );
+    mesh_binding *b = reinterpret_cast<mesh_binding*>(m.get_extra_ptr());
+    const auto &vertPresent( m.get_present_vertex() );
+    for( int i = 0; i < vertPresent.numAttrib; i++ ) {
+        glEnableVertexAttribArray(i);
+    }
+    /* draw calls */
+    const auto &drawing = m.get_present_drawing();
+    if( b->indexType != 0 ) {
+        glPrimitiveRestartIndex( m.get_restart_index() );
+        for( int i = 0; i < drawing.numDraws; i++ ) {
+            auto mode = primitive_type_to_gl_type( drawing.drawing[i].type );
+            glDrawElements( mode, drawing.drawing[i].count, b->indexType, 
+                    reinterpret_cast<void*>(drawing.drawing[i].offset) );
+        }
+    } else {
+        for( int i = 0; i < drawing.numDraws; i++ ) {
+            auto mode = primitive_type_to_gl_type( drawing.drawing[i].type );
+            glDrawArrays( mode, drawing.drawing[i].offset, drawing.drawing[i].count );
+        }
+    }
+}
+
 /* opengl_render::display_frame */
 void opengl_render::display_frame() {
     ::SwapBuffers( hdc );
 }
 
-
-// display buffer
-//
-
-
-
-
-
-typedef unsigned short      vindex_t; /* vertex index type */
-#define V_INDEX_TYPE        GL_UNSIGNED_SHORT
-
-typedef unsigned char       byte_t;
-
-
-
-
-
-
-GLuint compile_shader( const string &name, GLenum type ) {
-    auto shader = glCreateShader( type );
-    if( !shader ) {
-        std::cerr << "compile_shader() error: glCreateShader()" << std::endl;
-        return 0;
+/* opengl_render::primitive_type_to_gl_type */
+GLenum opengl_render::primitive_type_to_gl_type( primitive_type type ) {
+    switch( type ) {
+        case PRIMITIVE_TYPE_POINTS:
+            return GL_POINTS;
+        case PRIMITIVE_TYPE_LINES:
+            return GL_LINES;
+        case PRIMITIVE_TYPE_LINES_ADJACENCY:
+            return GL_LINES_ADJACENCY;
+        case PRIMITIVE_TYPE_LINE_STRIP:
+            return GL_LINE_STRIP;
+        case PRIMITIVE_TYPE_LINE_STRIP_ADJACENCY:
+            return GL_LINE_STRIP_ADJACENCY;
+        case PRIMITIVE_TYPE_LINE_LOOP:
+            return GL_LINE_LOOP;
+        case PRIMITIVE_TYPE_TRIANGLES:
+            return GL_TRIANGLES;
+        case PRIMITIVE_TYPE_TRIANGLES_ADJACENCY:
+            return GL_TRIANGLES_ADJACENCY;
+        case PRIMITIVE_TYPE_TRIANGLE_STRIP:
+            return GL_TRIANGLE_STRIP;
+        case PRIMITIVE_TYPE_TRIANGLE_FAN:
+            return GL_TRIANGLE_FAN;
+        default:
+            assert(0);
     }
-    auto [success, contents] = core::fs.read_contents( name );
-    if( success ) {
-        auto *shaderText = contents.c_str();
-        auto shaderTextLength = static_cast<GLint>( contents.length() );
-        glShaderSource( shader, 1, &shaderText, &shaderTextLength );
-        /* compile shader and print errors */
-        glCompileShader( shader );
-        GLint status;
-        glGetShaderiv( shader, GL_COMPILE_STATUS, &status );
-        if( !status ) {
-            GLchar log[ 1024 ];
-            glGetShaderInfoLog( shader, sizeof(log), NULL, log );
-            std::cerr << "compile_shader() error: glCompileShader()" << 
-                    log << std::endl;
-            glDeleteShader( shader );
-        }
-    } else {
-        std::cerr << "compile_shader() error: file '" << name << 
-                "' not found" << std::endl;
-    }
-    return shader;
-}
-
-GLuint make_shader_program( const string &vshName, const string &pshName ) {
-    auto program = glCreateProgram();
-    if( !program ) {
-        std::cerr << "make_shader_program() error: glCreateProgram()" << std::endl;
-        return 0;
-    }
-    auto vsh = compile_shader( vshName, GL_VERTEX_SHADER );
-    if( !vsh ) {
-        return 0;
-    }
-    auto psh = compile_shader( pshName, GL_FRAGMENT_SHADER );
-    if( !psh ) {
-        return 0;
-    }
-    glAttachShader( program, vsh );
-    glAttachShader( program, psh );
-    glLinkProgram( program );
-    /* check shader program link status */
-    GLint status;
-    glGetProgramiv( program, GL_LINK_STATUS, &status );
-    if( status == 0 ) {
-        GLchar log[ 1024 ];
-        glGetProgramInfoLog( program, sizeof(log), NULL, log );
-        std::cerr << "make_shader_program() error: glLinkProgram()" << 
-                    log << std::endl;
-        glDetachShader( program, vsh );
-        glDeleteShader( vsh );
-        glDetachShader( program, psh );
-        glDeleteShader( psh );
-        glDeleteProgram( program );
-        return 0;
-    }
-    glDetachShader( program, vsh );
-    glDeleteShader( vsh );
-    glDetachShader( program, psh );
-    glDeleteShader( psh );
-    return program;
-}
-
-
-/*
-
-
-    Fvector                                 vCameraPosition;
-    Fvector                                 vCameraDirection;
-    Fvector                                 vCameraTop;
-    Fvector                                 vCameraRight;
-
-    Fmatrix                 mView;
-    Fmatrix                 mProject;
-    Fmatrix                 mFullTransform;
-
-    // Copies of corresponding members. Used for synchronization.
-    Fvector                         vCameraPosition_saved;
-
-    Fmatrix                     mView_saved;
-    Fmatrix                     mProject_saved;
-    Fmatrix                     mFullTransform_saved;
-*/
-
-
-
-
-
-
-/* local_object 
-* Локальные координаты это координаты вашего объекта измеряемые относительно
-* точки отсчета расположенной там, где начинается сам объект
-* LOCAL SPACE mul (MODEL MATRIX) -> WORLD SPACE
-*/
-class local_object {
-public:
-};
-
-/* world_object
-* На следующем шаге локальные координаты преобразуются в координаты мирового
-* пространства, которые по смыслу являются координатами более крупного мира. 
-* Эти координаты измеряются относительно глобальной точки отсчёта, единой для 
-* всех других объектов расположенных в мировом пространстве.
-* WORLD SPACE mul (VIEV MATRIX) -> VIEW SPACE
-*/
-class world_object {
-public:
-
-};
-
-
-
-class controlled_camera : 
-        public camera, 
-        public input::raw_input {
-public:
-    controlled_camera( const vec3 &pos, const vec3 &dir, const vec3 &up ) :
-            camera( pos, dir, up ) {}
-
-    virtual bool    on_mouse_move( const vec2 &move ) override;
-    mat4            operator()();
-private:
-};
-
-/* controlled_camera::on_mouse_move */
-bool controlled_camera::on_mouse_move( const vec2 &move ) {
-    auto m = move / 500;
-    if( m.x ) {
-        quat q( get_up(), m.x );
-        set_direction( q * get_direction() );
-    }
-    if( m.y ) {
-        quat q( get_right(), m.y );
-        set_direction( q * get_direction() );
-        set_up( q * get_up() );
-
-    }
-    return true;
-}
-
-/* controlled_camera::operator() */
-mat4 controlled_camera::operator()() {
-    if( controlled_camera::is_key_pressed(VKRAW_W) ) {
-        move( get_direction() * 0.1 );
-    }
-    if( controlled_camera::is_key_pressed(VKRAW_S) ) {
-        move( -get_direction() * 0.1 );
-    }
-    if( controlled_camera::is_key_pressed(VKRAW_A) ) {
-        move( -get_right() * 0.1 );
-    }
-    if( controlled_camera::is_key_pressed(VKRAW_D) ) {
-        move( get_right() * 0.1 );
-    }
-    if( controlled_camera::is_key_pressed(VKRAW_SHIFT) ) {
-        move( -get_up() * 0.1 );
-    }
-    if( controlled_camera::is_key_pressed(VKRAW_SPACE) ) {
-        move( get_up() * 0.1 );
-    }
-    return camera::operator()();
+    return 0;
 }
 
 
@@ -485,60 +421,102 @@ mat4 controlled_camera::operator()() {
 
 } /* namespace engine */
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 using namespace engine;
  
 #define __unused(v)   static_cast<void>(v)
-
 int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow ) {
-    __unused(hInst);
-    __unused(hPrevInst);
-    __unused(lpCmdLine);
-    __unused(nCmdShow);
+    __unused(hInst); __unused(hPrevInst); __unused(lpCmdLine); __unused(nCmdShow);
 
     window w;
-    w.set_title( "Main window" );
-    w.set_size( {1280, 720} );
     w.align_center();
     w.create();
     w.show();
 
-    irender *r = new opengl_render( w.get_handle() );
+    opengl_render render( w.get_handle() );
     
-/*    GLint len = static_cast<contents.length()>;
-    Lengths[0]= strlen(pShaderText);
-    glShaderSource(ShaderObj, 1, p, Lengths);
-*/
-    
-    auto shProgram = make_shader_program( "shader.vsh", "shader.psh" );
-    glValidateProgram( shProgram );
-    GLint status;
-    glGetProgramiv( shProgram, GL_VALIDATE_STATUS, &status );
-    if( status == 0 ) {
-        GLchar log[ 1024 ];
-        glGetProgramInfoLog( shProgram, sizeof(log), NULL, log );
-        std::cerr << "glValidateProgram() error:" << log << std::endl;
+
+
+    shader sh;
+    sh.load( "shader.vsh", "shader.fsh" );
+    auto uniWorld = sh.get_uniform( "gWorld" );
+
+
+  
+    const vec3 Verts[] = {
+        {0.000f,  0.000f,  1.000f},
+        {0.894f,  0.000f,  0.447f},
+        {0.276f,  0.851f,  0.447f},
+        {-0.724f,  0.526f,  0.447f},
+        {-0.724f, -0.526f,  0.447f},
+        {0.276f, -0.851f,  0.447f},
+        {0.724f,  0.526f, -0.447f},
+        {-0.276f,  0.851f, -0.447f},
+        {-0.894f,  0.000f, -0.447f},
+        {-0.276f, -0.851f, -0.447f},
+        {0.724f, -0.526f, -0.447f},
+        {0.000f,  0.000f, -1.000f}
+    };
+
+    const unsigned int Faces[] = {
+        2, 1, 0,
+        3, 2, 0,
+        4, 3, 0,
+        5, 4, 0,
+        1, 5, 0,
+        11, 6,  7,
+        11, 7,  8,
+        11, 8,  9,
+        11, 9,  10,
+        11, 10, 6,
+        1, 2, 6,
+        2, 3, 7,
+        3, 4, 8,
+        4, 5, 9,
+        5, 1, 10,
+        2,  7, 6,
+        3,  8, 7,
+        4,  9, 8,
+        5, 10, 9,
+        1, 6, 10 
+    };
+
+    mesh sphere;
+
+    for( const auto &v : Verts ) {
+        draw_vertex dw{v};
+        sphere.add_vertex( dw );
     }
-
-
-    auto gWorldLocation = glGetUniformLocation( shProgram, "gWorld" );
-    assert( gWorldLocation != static_cast<int>(0xFFFFFFFF) );
-
-
-    GLuint axesVbo[3];
-    vec3 xAxis[]{ {0.0, 0.0, 0.0}, {5.0, 0.0, 0.0} };
-    vec3 yAxis[]{ {0.0, 0.0, 0.0}, {0.0, 5.0, 0.0} };
-    vec3 zAxis[]{ {0.0, 0.0, 0.0}, {0.0, 0.0, 5.0} };
-    
-
-
-    
-
-    vec3 v[] {
-        /*{0.5f,  0.5f, 0.0f},  // Верхний правый угол
-        {0.5f, -0.5f, 0.0f},  // Нижний правый угол
-        {-0.5f, -0.5f, 0.0f},  // Нижний левый угол
-        {-0.5f,  0.5f, 0.0f}   // Верхний левый угол
-        */
+    for( auto i : Faces ) {
+        sphere.add_index( i );
+    }
+    sphere.add_present_drawing( 
+                PRIMITIVE_TYPE_TRIANGLES, 
+                sphere.get_indices_number(),
+                0
+    );
+/*
+    struct vertx {
+        vec3    pos;
+        vec2    uv;
+    } vertx [] {
+        {{-1.0, -1.0, -1.0}, {}}
+    };
+*/
+    vec3 vert[] {
         {-1.0, -1.0, -1.0},
         {-1.0, -1.0, 1.0},
         {1.0, -1.0, -1.0},
@@ -546,166 +524,107 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
         {-1.0, 1.0, -1.0},
         {-1.0, 1.0, 1.0},
         {1.0, 1.0, -1.0},
-        {1.0, 1.0, 1.0} 
-        /*{-1.0, -1.0, 0.0},
-        {0.0, -1.0, 1.0},
-        {1.0, -1.0, 0.0},
-        {0.0, 1.0, 0.0}*/
+        {1.0, 1.0, 1.0}
+    };
+    unsigned short indices[] = {
+        0,1,2,1,2,3,2,3,7,7,2,6,6,7,5,6,5,4,5,4,0,5,0,1,0,4,6,0,6,2,1,5,7,1,7,3, //36
+        0,1,3,2, 0xffff ,4,5,7,6
     };
 
-    unsigned int indices[] = {
-        0,1,2,1,2,3,2,3,7,7,2,6,6,7,5,6,5,4,5,4,0,5,0,1,0,4,6,0,6,2,1,5,7,1,7,3
-        //0, 1, 3,   // Первый треугольник
-        //1, 2, 3    // Второй треугольник
-        //0, 3, 1, 1, 3, 2, 2, 3, 0, 0, 1, 2
-    };
-
-    GLuint vbo; /* vertex buffer object */
-    GLuint ibo; /* index buffer object (Element Buffer Object) */
-    GLuint vao;
-
-
-    glGenVertexArrays( 1, &vao );
-    {
-        /* init mesh (vao)*/
-        glBindVertexArray( vao );
-
-        glGenBuffers( 1, &vbo );
-        glBindBuffer( GL_ARRAY_BUFFER, vbo );
-        glBufferData( GL_ARRAY_BUFFER, sizeof(v), v[0].get_ptr(), GL_STATIC_DRAW );
-
-        glGenBuffers( 1, &ibo );
-        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-        glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW );
-
-        glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), NULL );
-        glEnableVertexAttribArray(0);
+    mesh cube;
+    for( const auto &v : vert ) {
+        cube.add_vertex( v );
     }
-    glBindVertexArray(0);
+    for( auto i : indices ) {
+        cube.add_index( i );
+    }
+    cube.add_present_drawing( 
+                PRIMITIVE_TYPE_TRIANGLES, 
+                36,
+                0
+    );
+    cube.add_present_drawing( 
+                PRIMITIVE_TYPE_LINE_LOOP, 
+                9,
+                36
+    );
 
 
 
-    glClearColor( 0.0f, 0.3f, 0.3f, 0.0f );
-
-
-    mat4 world;
-    world.identity();
-    //glUniformMatrix4fv( gWorldLocation, 1, GL_TRUE, world.get_ptr() );
-
-    core::timer timer;
-
-
-    static float fscale = 0.0;
-    static float fpos = 0.0;
-    static float frot = 0.0;
     object3d_location loc;
     object3d_location loc2;
+    object3d_location loc3;
+    core::timer timer;
     controlled_camera cam( vec3(0,0,0), vec3(0,1,0), vec3(0,0,1) );
     cam.attach_input();
+    onoff_key pauseKey( VKRAW_BACK );
+    pauseKey.attach_input();
+    quat qu( vec3(1,2,3), pi / 123.0 );
 
-    //cam.set_position( vec3( 0, -5, 0 ) );
-
-    static float pi = 3.14159265358979;
-    bool pause = false;
-    bool change = true;
-    bool prev = false;
-    float stepSize = 0.1;
-
+        
+    glEnable( GL_PROGRAM_POINT_SIZE );
+    glEnable( GL_PRIMITIVE_RESTART );
+    glEnable( GL_DEPTH_TEST );
+    glPointSize( 20.0 );
 
     while( appIsRun ) {
         if( raw_input::is_key_pressed(VKRAW_ESCAPE) ) {
             appIsRun = false;
         }
+        w.process_messages();
 
-        if( prev != raw_input::is_key_pressed(VKRAW_Q) ) {
-            std::cout <<"change" << std::endl;
-            if( change ) {
-                pause = !pause;
-                change = false;
-            } else {
-                change = true;
-            }
-            if( pause ) {
-                //w.set_title( "pause" );
-            } else {
-                //w.set_title( "run" );
-            }
-        }
-        prev = raw_input::is_key_pressed(VKRAW_Q);
-
-
-        if( pause ) {
+        if( pauseKey.is_active() ) {
             timer.time_sec();
-            w.process_messages();
-            Sleep(1);
-            r->display_frame();
-
+            Sleep(16);
+            render.display_frame();
             continue;
         }
 
-
-        
-        
-
         auto msec = timer.time_sec();
-        w.process_messages();
+        __unused(msec);
 
         glViewport( 0, 0, w.get_size().width, w.get_size().height );
 
-
-        fscale += 3.14159265358979 * msec * 0.25;
-        fpos += 3.14159265358979 * msec * 0.3333333333333333333333;
-        frot += 3.14159265358979 * msec *0.5;
-
-        auto [sin, cos] = engine::math::sin_cos( fpos );
         loc.set_scale( vec3(0.5,  0.5,  0.5) );
         loc.set_position( vec3(0.0, 10.0, 0.0) );
 
         loc2.set_scale( vec3(1.0,  1.0,  1.0) );
         loc2.set_position( vec3(10.0, 0.0, 0.0) );
+        loc2.rotate( qu );
+
+        loc3.set_scale( vec3(5.0, 5.0, 5.0) );
+        loc3.set_position( vec3(-5.0, 5.0, 0.0) );
+        loc3.rotate( qu );
+
+        cam.set_perspective_projection( pi / 3.0, w.get_aspect(), 0.1, 1000 );
+
+
+        render.clear();
+        
+        auto toShader = cam() * loc();
+        uniWorld.set( toShader );
+        sh.use();
+
+        sh.use();
+        uniWorld.set( toShader );
+        render.draw_mesh( cube );
         
 
 
-        //cam.move( vec3(cos * 0.1, sin * 0.1, 0) );
-        auto perspective = mat4::perspective( pi / 180.0 * 60.0, w.get_aspect(), 0.1, 1000 );
+        sh.use();
+        toShader = cam() * loc2();
+        uniWorld.set( toShader );
+        render.draw_mesh( cube );
 
-        
-
-        //std::cout << "[" << ccc.z.x << ", " << ccc.z.y << ", " << ccc.z.z << "]" << std::endl;
-
-        glClear( GL_COLOR_BUFFER_BIT );
-
-
-
-        auto toShader = perspective * cam() * loc();
-        /* send world matrix to shader */
-        glUniformMatrix4fv( gWorldLocation, 1, GL_TRUE, toShader.get_ptr() );
-
-        glUseProgram( shProgram );
-        glBindVertexArray( vao );
-        glDrawElements( GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0 );
-        glBindVertexArray( 0 );
-
-        toShader = perspective * cam() * loc2();
-        glUniformMatrix4fv( gWorldLocation, 1, GL_TRUE, toShader.get_ptr() );
-        glUseProgram( shProgram );
-        glBindVertexArray( vao );
-        glDrawElements( GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0 );
-        glBindVertexArray( 0 );
-
-
-
+        toShader = cam() * loc3();
+        uniWorld.set( toShader );
+        render.draw_mesh( sphere );
 
         auto skip = static_cast<int>(1000.0 / 60.0 - timer.get_elapsed_msec());
         Sleep( skip > 0 ? skip : 0 );
-
-        r->display_frame();
+        render.display_frame();
     }    
     
-
-
-    delete r;
-
 
     return 0;
 }
