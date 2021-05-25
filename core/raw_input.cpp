@@ -9,6 +9,11 @@ bool raw_input::keysPressed[256];
 bool raw_input::isInit {false};
 vector<iinput*> raw_input::focusStack;
 
+/* raw_input::~raw_input */
+raw_input::~raw_input() {
+    detach_input();
+}
+
 /* raw_input::attach_input */
 void raw_input::attach_input() {
     assert( !is_attached() );
@@ -18,7 +23,9 @@ void raw_input::attach_input() {
 
 /* raw_input::detach_input */
 void raw_input::detach_input() {
-    assert( is_attached() );
+    if( !is_attached() ) {
+        return;
+    }
     auto inp( dynamic_cast<iinput*>(this) );
     if( focusStack.back() == inp ) {
         focusStack.pop_back();

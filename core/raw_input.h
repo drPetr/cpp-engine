@@ -174,6 +174,8 @@ public:
 /* raw input */
 class raw_input : public iinput {
 public:
+    virtual             ~raw_input();
+
     virtual void        attach_input() override;
 
     virtual void        detach_input() override;
