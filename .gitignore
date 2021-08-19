@@ -6,3 +6,4 @@ debug/
 3rd_party/zlib-1.2.11-obj/
 3rd_party/openal-soft-build/
 3rd_party/openal-soft/
+3rd_party/*.a
