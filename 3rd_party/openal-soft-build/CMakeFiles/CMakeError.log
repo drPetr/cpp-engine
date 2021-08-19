@@ -1,0 +1,155 @@
+Determining if the function __android_log_print exists in the log failed with the following output:
+Change Dir: C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe cmTC_8ea84/fast && C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe  -f CMakeFiles\cmTC_8ea84.dir\build.make CMakeFiles/cmTC_8ea84.dir/build
+mingw32-make.exe[1]: Entering directory 'C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_8ea84.dir/CheckFunctionExists.c.obj
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\gcc.exe   -DCHECK_FUNCTION_EXISTS=__android_log_print -o CMakeFiles\cmTC_8ea84.dir\CheckFunctionExists.c.obj -c "C:\Program Files\CMake\share\cmake-3.18\Modules\CheckFunctionExists.c"
+Linking C executable cmTC_8ea84.exe
+"C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_8ea84.dir\link.txt --verbose=1
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\cmTC_8ea84.dir/objects.a
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\ar.exe cr CMakeFiles\cmTC_8ea84.dir/objects.a @CMakeFiles\cmTC_8ea84.dir\objects1.rsp
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\gcc.exe  -DCHECK_FUNCTION_EXISTS=__android_log_print -Wl,--whole-archive CMakeFiles\cmTC_8ea84.dir/objects.a -Wl,--no-whole-archive -o cmTC_8ea84.exe -Wl,--out-implib,libcmTC_8ea84.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\cmTC_8ea84.dir\linklibs.rsp
+CMakeFiles\cmTC_8ea84.dir/objects.a(CheckFunctionExists.c.obj):CheckFunctionExists.c:(.text+0x15): undefined reference to `__android_log_print'
+collect2.exe: error: ld returned 1 exit status
+mingw32-make.exe[1]: *** [CMakeFiles\cmTC_8ea84.dir\build.make:107: cmTC_8ea84.exe] Error 1
+mingw32-make.exe[1]: Leaving directory 'C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp'
+mingw32-make.exe: *** [Makefile:139: cmTC_8ea84/fast] Error 2
+
+
+
+Determining if the include file arm_neon.h exists failed with the following output:
+Change Dir: C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe cmTC_50356/fast && C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe  -f CMakeFiles\cmTC_50356.dir\build.make CMakeFiles/cmTC_50356.dir/build
+mingw32-make.exe[1]: Entering directory 'C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_50356.dir/CheckIncludeFile.c.obj
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\gcc.exe    -o CMakeFiles\cmTC_50356.dir\CheckIncludeFile.c.obj -c C:\Users\Petr\Desktop\cpp-engine\3rd_party\openal-soft-build\CMakeFiles\CMakeTmp\CheckIncludeFile.c
+C:\Users\Petr\Desktop\cpp-engine\3rd_party\openal-soft-build\CMakeFiles\CMakeTmp\CheckIncludeFile.c:1:10: fatal error: arm_neon.h: No such file or directory
+ #include <arm_neon.h>
+          ^~~~~~~~~~~~
+compilation terminated.
+mingw32-make.exe[1]: *** [CMakeFiles\cmTC_50356.dir\build.make:84: CMakeFiles/cmTC_50356.dir/CheckIncludeFile.c.obj] Error 1
+mingw32-make.exe[1]: Leaving directory 'C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp'
+mingw32-make.exe: *** [Makefile:139: cmTC_50356/fast] Error 2
+
+
+
+Determining if the function clock_gettime exists in the rt failed with the following output:
+Change Dir: C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe cmTC_d840c/fast && C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe  -f CMakeFiles\cmTC_d840c.dir\build.make CMakeFiles/cmTC_d840c.dir/build
+mingw32-make.exe[1]: Entering directory 'C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_d840c.dir/CheckFunctionExists.c.obj
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\gcc.exe   -DCHECK_FUNCTION_EXISTS=clock_gettime -o CMakeFiles\cmTC_d840c.dir\CheckFunctionExists.c.obj -c "C:\Program Files\CMake\share\cmake-3.18\Modules\CheckFunctionExists.c"
+Linking C executable cmTC_d840c.exe
+"C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_d840c.dir\link.txt --verbose=1
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\cmTC_d840c.dir/objects.a
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\ar.exe cr CMakeFiles\cmTC_d840c.dir/objects.a @CMakeFiles\cmTC_d840c.dir\objects1.rsp
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\gcc.exe  -DCHECK_FUNCTION_EXISTS=clock_gettime -Wl,--whole-archive CMakeFiles\cmTC_d840c.dir/objects.a -Wl,--no-whole-archive -o cmTC_d840c.exe -Wl,--out-implib,libcmTC_d840c.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\cmTC_d840c.dir\linklibs.rsp
+C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find -lrt
+collect2.exe: error: ld returned 1 exit status
+mingw32-make.exe[1]: *** [CMakeFiles\cmTC_d840c.dir\build.make:107: cmTC_d840c.exe] Error 1
+mingw32-make.exe[1]: Leaving directory 'C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp'
+mingw32-make.exe: *** [Makefile:139: cmTC_d840c/fast] Error 2
+
+
+
+Determining if the include file dlfcn.h exists failed with the following output:
+Change Dir: C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe cmTC_97c8e/fast && C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe  -f CMakeFiles\cmTC_97c8e.dir\build.make CMakeFiles/cmTC_97c8e.dir/build
+mingw32-make.exe[1]: Entering directory 'C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_97c8e.dir/CheckIncludeFile.c.obj
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\gcc.exe    -o CMakeFiles\cmTC_97c8e.dir\CheckIncludeFile.c.obj -c C:\Users\Petr\Desktop\cpp-engine\3rd_party\openal-soft-build\CMakeFiles\CMakeTmp\CheckIncludeFile.c
+C:\Users\Petr\Desktop\cpp-engine\3rd_party\openal-soft-build\CMakeFiles\CMakeTmp\CheckIncludeFile.c:1:10: fatal error: dlfcn.h: No such file or directory
+ #include <dlfcn.h>
+          ^~~~~~~~~
+compilation terminated.
+mingw32-make.exe[1]: *** [CMakeFiles\cmTC_97c8e.dir\build.make:84: CMakeFiles/cmTC_97c8e.dir/CheckIncludeFile.c.obj] Error 1
+mingw32-make.exe[1]: Leaving directory 'C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp'
+mingw32-make.exe: *** [Makefile:139: cmTC_97c8e/fast] Error 2
+
+
+
+Determining if the function dlopen exists in the dl failed with the following output:
+Change Dir: C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe cmTC_2a8dd/fast && C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe  -f CMakeFiles\cmTC_2a8dd.dir\build.make CMakeFiles/cmTC_2a8dd.dir/build
+mingw32-make.exe[1]: Entering directory 'C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_2a8dd.dir/CheckFunctionExists.c.obj
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\gcc.exe   -DCHECK_FUNCTION_EXISTS=dlopen -o CMakeFiles\cmTC_2a8dd.dir\CheckFunctionExists.c.obj -c "C:\Program Files\CMake\share\cmake-3.18\Modules\CheckFunctionExists.c"
+Linking C executable cmTC_2a8dd.exe
+"C:\Program Files\CMake\bin\cmake.exe" -E cmake_link_script CMakeFiles\cmTC_2a8dd.dir\link.txt --verbose=1
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\cmTC_2a8dd.dir/objects.a
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\ar.exe cr CMakeFiles\cmTC_2a8dd.dir/objects.a @CMakeFiles\cmTC_2a8dd.dir\objects1.rsp
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\gcc.exe  -DCHECK_FUNCTION_EXISTS=dlopen -Wl,--whole-archive CMakeFiles\cmTC_2a8dd.dir/objects.a -Wl,--no-whole-archive -o cmTC_2a8dd.exe -Wl,--out-implib,libcmTC_2a8dd.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\cmTC_2a8dd.dir\linklibs.rsp
+C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find -ldl
+collect2.exe: error: ld returned 1 exit status
+mingw32-make.exe[1]: *** [CMakeFiles\cmTC_2a8dd.dir\build.make:107: cmTC_2a8dd.exe] Error 1
+mingw32-make.exe[1]: Leaving directory 'C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp'
+mingw32-make.exe: *** [Makefile:139: cmTC_2a8dd/fast] Error 2
+
+
+
+Determining if the posix_memalign exist failed with the following output:
+Change Dir: C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe cmTC_55ed7/fast && C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe  -f CMakeFiles\cmTC_55ed7.dir\build.make CMakeFiles/cmTC_55ed7.dir/build
+mingw32-make.exe[1]: Entering directory 'C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_55ed7.dir/CheckSymbolExists.c.obj
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\gcc.exe    -o CMakeFiles\cmTC_55ed7.dir\CheckSymbolExists.c.obj -c C:\Users\Petr\Desktop\cpp-engine\3rd_party\openal-soft-build\CMakeFiles\CMakeTmp\CheckSymbolExists.c
+C:\Users\Petr\Desktop\cpp-engine\3rd_party\openal-soft-build\CMakeFiles\CMakeTmp\CheckSymbolExists.c: In function 'main':
+C:\Users\Petr\Desktop\cpp-engine\3rd_party\openal-soft-build\CMakeFiles\CMakeTmp\CheckSymbolExists.c:8:19: error: 'posix_memalign' undeclared (first use in this function)
+   return ((int*)(&posix_memalign))[argc];
+                   ^~~~~~~~~~~~~~
+C:\Users\Petr\Desktop\cpp-engine\3rd_party\openal-soft-build\CMakeFiles\CMakeTmp\CheckSymbolExists.c:8:19: note: each undeclared identifier is reported only once for each function it appears in
+mingw32-make.exe[1]: *** [CMakeFiles\cmTC_55ed7.dir\build.make:84: CMakeFiles/cmTC_55ed7.dir/CheckSymbolExists.c.obj] Error 1
+mingw32-make.exe[1]: Leaving directory 'C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp'
+mingw32-make.exe: *** [Makefile:139: cmTC_55ed7/fast] Error 2
+
+
+File C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <stdlib.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef posix_memalign
+  return ((int*)(&posix_memalign))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the proc_pidpath exist failed with the following output:
+Change Dir: C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe cmTC_decd6/fast && C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe  -f CMakeFiles\cmTC_decd6.dir\build.make CMakeFiles/cmTC_decd6.dir/build
+mingw32-make.exe[1]: Entering directory 'C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_decd6.dir/CheckSymbolExists.c.obj
+C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\gcc.exe    -o CMakeFiles\cmTC_decd6.dir\CheckSymbolExists.c.obj -c C:\Users\Petr\Desktop\cpp-engine\3rd_party\openal-soft-build\CMakeFiles\CMakeTmp\CheckSymbolExists.c
+C:\Users\Petr\Desktop\cpp-engine\3rd_party\openal-soft-build\CMakeFiles\CMakeTmp\CheckSymbolExists.c:2:10: fatal error: libproc.h: No such file or directory
+ #include <libproc.h>
+          ^~~~~~~~~~~
+compilation terminated.
+mingw32-make.exe[1]: *** [CMakeFiles\cmTC_decd6.dir\build.make:84: CMakeFiles/cmTC_decd6.dir/CheckSymbolExists.c.obj] Error 1
+mingw32-make.exe[1]: Leaving directory 'C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp'
+mingw32-make.exe: *** [Makefile:139: cmTC_decd6/fast] Error 2
+
+
+File C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft-build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <libproc.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef proc_pidpath
+  return ((int*)(&proc_pidpath))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}

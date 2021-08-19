@@ -8,19 +8,15 @@ basic_mesh::basic_mesh( const present_vertex &presentVertex, const present_index
     switch( presentIndex ) {
         case PRESENT_INDEX_32BITS:
             indexSize = 4;
-            restartIndex = 0xffffffff;
             break;
         case PRESENT_INDEX_16BITS:
             indexSize = 2;
-            restartIndex = 0xffff;
             break;
         case PRESENT_INDEX_8BITS:
             indexSize = 1;
-            restartIndex = 0xff;
             break;
         case PRESENT_INDEX_NO_INDEX:
             indexSize = 0;
-            restartIndex = 0x0;
             break;
         default:
             assert(0);

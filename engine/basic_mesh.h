@@ -35,7 +35,6 @@ protected:
     present_vertex      presentVertex;  
     present_index       presentIndex;   /* index buffer bits 0, 1, 2 or 4 */
     present_drawing     presentDrawing;
-    unsigned int        restartIndex{0};
     int                 indexSize{0};
     int                 verticesNum{0};
     int                 indicesNum{0};
@@ -75,11 +74,6 @@ inline int basic_mesh::get_vertices_number() {
 /* basic_mesh::get_indices_number */
 inline int basic_mesh::get_indices_number() {
     return indicesNum;
-}
-
-/* basic_mesh::get_restart_index */
-inline unsigned int basic_mesh::get_restart_index() {
-    return restartIndex;
 }
 
 /* basic_mesh::get_vertex_ptr */

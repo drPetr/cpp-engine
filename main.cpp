@@ -14,7 +14,11 @@
 #include <renderer/shader.h>
 #include <engine/controlled_camera.h>
 #include <core/common.h>
+#include <core/filesystem.h>
 #include <engine/onoff_key.h>
+#include <renderer/image.h>
+#include <cstdlib>
+#include <ctime>
 using namespace engine::math;
 using namespace engine::input;
 
@@ -234,7 +238,8 @@ struct mesh_binding {
     GLuint      vbo{0};     /* GL vertex buffer object */
     GLuint      ibo{0};     /* GL index buffer object */
     GLuint      vao{0};     /* GL vertex array object */
-    GLenum      indexType{0};    
+    GLenum      indexType{0};
+    GLuint      restartIndex{0};
 };
 
 class opengl_render {
@@ -312,10 +317,10 @@ void opengl_render::bind_mesh( basic_mesh &m ) {
             auto offset = vertPresent.attributes[i].offset;
             switch( vertPresent.attributes[i].type ) {
                 case PRESENT_VERTEX_ATTRIB_XYZ:
-                    glVertexAttribPointer( i, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), reinterpret_cast<void*>(offset) );
+                    glVertexAttribPointer( i, 3, GL_FLOAT, GL_FALSE, vertPresent.vertexSize, reinterpret_cast<void*>(offset) );
                     break;
                 case PRESENT_VERTEX_ATTRIB_UV:
-                    glVertexAttribPointer( i, 2, GL_FLOAT, GL_FALSE, sizeof(vec2), reinterpret_cast<void*>(offset) );
+                    glVertexAttribPointer( i, 2, GL_FLOAT, GL_FALSE, vertPresent.vertexSize, reinterpret_cast<void*>(offset) );
                     break;
                 case PRESENT_VERTEX_ATTRIB_MAX_NUMBER:
                     assert(0);
@@ -329,14 +334,17 @@ void opengl_render::bind_mesh( basic_mesh &m ) {
             switch( indPresent ) {
                 case PRESENT_INDEX_32BITS:
                     b->indexType = GL_UNSIGNED_INT;
+                    b->restartIndex = 0xffffffff;
                     indexBytes = 4;
                     break;
                 case PRESENT_INDEX_16BITS:
                     b->indexType = GL_UNSIGNED_SHORT;
+                    b->restartIndex = 0xffff;
                     indexBytes = 2;
                     break;
                 case PRESENT_INDEX_8BITS:
                     b->indexType = GL_UNSIGNED_BYTE;
+                    b->restartIndex = 0xff;
                     indexBytes = 1;
                     break;
                 default:
@@ -348,6 +356,9 @@ void opengl_render::bind_mesh( basic_mesh &m ) {
             glBufferData( GL_ELEMENT_ARRAY_BUFFER, 
                     indexBytes * m.get_indices_number(), 
                     m.get_index_ptr(0), GL_STATIC_DRAW );
+        } else {
+            b->indexType = 0;
+            b->restartIndex = 0;
         }
         glBindVertexArray( 0 );
         b->isInit = true;
@@ -367,7 +378,7 @@ void opengl_render::draw_mesh( basic_mesh &m ) {
     /* draw calls */
     const auto &drawing = m.get_present_drawing();
     if( b->indexType != 0 ) {
-        glPrimitiveRestartIndex( m.get_restart_index() );
+        glPrimitiveRestartIndex( b->restartIndex );
         for( int i = 0; i < drawing.numDraws; i++ ) {
             auto mode = primitive_type_to_gl_type( drawing.drawing[i].type );
             glDrawElements( mode, drawing.drawing[i].count, b->indexType, 
@@ -420,26 +431,42 @@ GLenum opengl_render::primitive_type_to_gl_type( primitive_type type ) {
 
 
 } /* namespace engine */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 using namespace engine;
+
+
+
+
+
+
+
+float rand_float( float min, float max ) {
+    float delta = max - min;
+    float rnd = (rand() / (float)RAND_MAX) * delta;
+    return min + rnd;
+}
+
+
+struct temp_s {
+    object3d_location   loc;
+    quat                qu;
+};
+
+
  
 #define __unused(v)   static_cast<void>(v)
 int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow ) {
     __unused(hInst); __unused(hPrevInst); __unused(lpCmdLine); __unused(nCmdShow);
+
+
+    renderer::image img;
+    core::timer tm;
+    
+    img.load_from_file( "1234.png" );
+    /*tm.start();
+    img.save_to_file( "image_out.jpg" );
+    std::cout << "time: " << tm.get_elapsed_msec() << std::endl;*/
+
+    //return 0;
 
     window w;
     w.align_center();
@@ -450,55 +477,42 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
     
 
 
+
+    
+
     shader sh;
     sh.load( "shader.vsh", "shader.fsh" );
     auto uniWorld = sh.get_uniform( "gWorld" );
+    auto uniTex = sh.get_uniform( "gTex" );
 
 
   
-    const vec3 Verts[] = {
-        {0.000f,  0.000f,  1.000f},
-        {0.894f,  0.000f,  0.447f},
-        {0.276f,  0.851f,  0.447f},
-        {-0.724f,  0.526f,  0.447f},
-        {-0.724f, -0.526f,  0.447f},
-        {0.276f, -0.851f,  0.447f},
-        {0.724f,  0.526f, -0.447f},
-        {-0.276f,  0.851f, -0.447f},
-        {-0.894f,  0.000f, -0.447f},
-        {-0.276f, -0.851f, -0.447f},
-        {0.724f, -0.526f, -0.447f},
-        {0.000f,  0.000f, -1.000f}
+    const draw_vertex Verts[] = {
+        {{0.000f,  0.000f,  1.000f},{0.0, 0.0}},
+        {{0.894f,  0.000f,  0.447f},{0.0, 0.0}},
+        {{0.276f,  0.851f,  0.447f},{0.0, 0.0}},
+        {{-0.724f,  0.526f,  0.447f},{0.0, 0.0}},
+        {{-0.724f, -0.526f,  0.447f},{0.0, 0.0}},
+        {{0.276f, -0.851f,  0.447f},{0.0, 0.0}},
+        {{0.724f,  0.526f, -0.447f},{0.0, 0.0}},
+        {{-0.276f,  0.851f, -0.447f},{0.0, 0.0}},
+        {{-0.894f,  0.000f, -0.447f},{0.0, 0.0}},
+        {{-0.276f, -0.851f, -0.447f},{0.0, 0.0}},
+        {{0.724f, -0.526f, -0.447f},{0.0, 0.0}},
+        {{0.000f,  0.000f, -1.000f},{0.0, 0.0}}
     };
 
     const unsigned int Faces[] = {
-        2, 1, 0,
-        3, 2, 0,
-        4, 3, 0,
-        5, 4, 0,
-        1, 5, 0,
-        11, 6,  7,
-        11, 7,  8,
-        11, 8,  9,
-        11, 9,  10,
-        11, 10, 6,
-        1, 2, 6,
-        2, 3, 7,
-        3, 4, 8,
-        4, 5, 9,
-        5, 1, 10,
-        2,  7, 6,
-        3,  8, 7,
-        4,  9, 8,
-        5, 10, 9,
-        1, 6, 10 
+        0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5, 0, 5, 1, 7, 6, 11, 
+        8, 7, 11, 9, 8, 11, 10, 9, 11, 6, 10, 11, 6, 2, 1,
+        7, 3, 2, 8, 4, 3, 9, 5, 4, 10, 1, 5, 6,  7, 2,
+        7,  8, 3, 8,  9, 4, 9, 10, 5, 10, 6, 1
     };
 
     mesh sphere;
 
     for( const auto &v : Verts ) {
-        draw_vertex dw{v};
-        sphere.add_vertex( dw );
+        sphere.add_vertex( v );
     }
     for( auto i : Faces ) {
         sphere.add_index( i );
@@ -508,48 +522,35 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
                 sphere.get_indices_number(),
                 0
     );
-/*
-    struct vertx {
-        vec3    pos;
-        vec2    uv;
-    } vertx [] {
-        {{-1.0, -1.0, -1.0}, {}}
+
+    
+
+    const draw_vertex vert[] {
+        {{-1.0, -1.0, -1.0},{0.0, 0.0}},
+        {{-1.0,  1.0, -1.0},{0.0, 1.0}},
+        {{ 1.0, -1.0, -1.0},{1.0, 0.0}},
+        {{ 1.0,  1.0, -1.0},{1.0, 1.0}},
+        {{ 1.0, -1.0,  1.0},{0.0, 0.0}},
+        {{ 1.0,  1.0,  1.0},{0.0, 1.0}},
+        {{-1.0, -1.0,  1.0},{1.0, 0.0}},
+        {{-1.0,  1.0,  1.0},{1.0, 1.0}}
     };
-*/
-    vec3 vert[] {
-        {-1.0, -1.0, -1.0},
-        {-1.0, -1.0, 1.0},
-        {1.0, -1.0, -1.0},
-        {1.0, -1.0, 1.0},
-        {-1.0, 1.0, -1.0},
-        {-1.0, 1.0, 1.0},
-        {1.0, 1.0, -1.0},
-        {1.0, 1.0, 1.0}
-    };
-    unsigned short indices[] = {
-        0,1,2,1,2,3,2,3,7,7,2,6,6,7,5,6,5,4,5,4,0,5,0,1,0,4,6,0,6,2,1,5,7,1,7,3, //36
-        0,1,3,2, 0xffff ,4,5,7,6
+    unsigned char Indices[] = {
+        0,1,2,3,4,5,6,7,0xff,2,4,0,6,1,7,3,5
     };
 
-    mesh cube;
+    mesh cube(PRESENT_INDEX_8BITS);
     for( const auto &v : vert ) {
         cube.add_vertex( v );
     }
-    for( auto i : indices ) {
+    for( auto i : Indices ) {
         cube.add_index( i );
     }
     cube.add_present_drawing( 
-                PRIMITIVE_TYPE_TRIANGLES, 
-                36,
-                0
-    );
-    cube.add_present_drawing( 
-                PRIMITIVE_TYPE_LINE_LOOP, 
-                9,
-                36
-    );
+                PRIMITIVE_TYPE_TRIANGLE_STRIP, 
+                cube.get_indices_number(), 0 );
 
-
+    
 
     object3d_location loc;
     object3d_location loc2;
@@ -557,15 +558,53 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
     core::timer timer;
     controlled_camera cam( vec3(0,0,0), vec3(0,1,0), vec3(0,0,1) );
     cam.attach_input();
+    //cam.set_position( vec3(0, -100, 0) );
     onoff_key pauseKey( VKRAW_BACK );
     pauseKey.attach_input();
     quat qu( vec3(1,2,3), pi / 123.0 );
 
-        
-    glEnable( GL_PROGRAM_POINT_SIZE );
+    //glFrontFace( GL_CCW ); /* default */
+    //glCullFace( GL_BACK ); /* default */
+    glEnable( GL_CULL_FACE );
     glEnable( GL_PRIMITIVE_RESTART );
     glEnable( GL_DEPTH_TEST );
-    glPointSize( 20.0 );
+    raw_input::key currentKey = VKRAW_F1;
+
+    /* texturing */
+    GLuint textureObj;
+    glGenTextures(1, &textureObj);
+    glBindTexture(GL_TEXTURE_2D, textureObj);
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, 
+            img.get_width(), img.get_height(),
+            0, GL_RGBA, GL_UNSIGNED_BYTE, img.get_line_ptr(0) );
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureObj);
+
+
+    srand( time(NULL) );
+    int locationsCount = 10000;
+    temp_s *locations = new temp_s[locationsCount];
+    for( int i = 0; i < locationsCount; i++ ) {
+        float x, y, z;
+        float s = rand_float(0.1, 4.0);
+        locations[i].loc.set_scale( vec3(s,  s,  s) );
+        x = rand_float(-500, 500);
+        y = rand_float(-500, 500);
+        z = rand_float(-500, 500);
+        locations[i].loc.set_position( vec3(x, y, z) );
+        x = rand_float(-500, 500);
+        y = rand_float(-500, 500);
+        z = rand_float(-500, 500);
+        float del = rand_float(-500, 500);
+        if( del == 0 ) {
+            del = 100;
+        }
+        quat q( vec3(x,y,z), pi / del );
+        locations[i].qu = q;
+    }
+
 
     while( appIsRun ) {
         if( raw_input::is_key_pressed(VKRAW_ESCAPE) ) {
@@ -573,12 +612,40 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
         }
         w.process_messages();
 
+        if( raw_input::is_key_pressed(VKRAW_F1) && currentKey != VKRAW_F1 ) {
+            currentKey = VKRAW_F1;
+            glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+            common::log() << "Polygon mode: FILL\n";
+        }
+        if( raw_input::is_key_pressed(VKRAW_F2) && currentKey != VKRAW_F2 ) {
+            currentKey = VKRAW_F2;
+            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+            common::log() << "Polygon mode: LINE\n";
+        }
+        if( raw_input::is_key_pressed(VKRAW_F3) && currentKey != VKRAW_F3 ) {
+            currentKey = VKRAW_F3;
+            glPolygonMode( GL_FRONT_AND_BACK, GL_POINT );
+            common::log() << "Polygon mode: POINT\n";
+        }
+        if( raw_input::is_key_pressed(VKRAW_F5) && currentKey != VKRAW_F5 ) {
+            currentKey = VKRAW_F5;
+            glEnable( GL_CULL_FACE );
+            common::log() << "Enable: CULL FACE\n";
+        }
+        if( raw_input::is_key_pressed(VKRAW_F6) && currentKey != VKRAW_F6 ) {
+            currentKey = VKRAW_F6;
+            glDisable( GL_CULL_FACE );
+            common::log() << "Disable: CULL FACE\n";
+        }
+        
         if( pauseKey.is_active() ) {
             timer.time_sec();
             Sleep(16);
             render.display_frame();
             continue;
         }
+
+        cam.update_movement();
 
         auto msec = timer.time_sec();
         __unused(msec);
@@ -592,7 +659,7 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
         loc2.set_position( vec3(10.0, 0.0, 0.0) );
         loc2.rotate( qu );
 
-        loc3.set_scale( vec3(5.0, 5.0, 5.0) );
+        loc3.set_scale( vec3(2.0, 2.0, 2.0) );
         loc3.set_position( vec3(-5.0, 5.0, 0.0) );
         loc3.rotate( qu );
 
@@ -602,12 +669,22 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
         render.clear();
         
         auto toShader = cam() * loc();
+        sh.use();
         uniWorld.set( toShader );
-        sh.use();
+        glBindTexture(GL_TEXTURE_2D, textureObj);
 
-        sh.use();
+        uniTex.set( GL_TEXTURE0 );
+
+
         uniWorld.set( toShader );
         render.draw_mesh( cube );
+
+        for( int i = 0; i < locationsCount; i++ ) {
+            toShader = cam() * locations[i].loc();
+            uniWorld.set( toShader );
+            render.draw_mesh( cube );
+            locations[i].loc.rotate( locations[i].qu );
+        }
         
 
 
@@ -625,6 +702,7 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
         render.display_frame();
     }    
     
+    delete[] locations;
 
     return 0;
 }

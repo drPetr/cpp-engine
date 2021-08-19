@@ -11,7 +11,7 @@ public:
     typedef float   type;
 public:
 
-                    quat();
+                    quat() {}
                     quat( const type x, const type y, const type z, const type w ) :
                             x{x}, y{y}, z{z}, w{w} {}
                     quat( const vec3 &v, const type angle );

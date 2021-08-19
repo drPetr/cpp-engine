@@ -5,7 +5,7 @@ source_dirs      := $(addprefix ../,$(source_dirs))
 search_wildcards := $(addsuffix /*.cpp,$(source_dirs))
 
 CC:= g++
-INCLUDE:= -I../
+INCLUDE:= -I../ -I../3rd_party/
 
 $(program_name): $(notdir $(patsubst %.cpp,%.o, $(wildcard $(search_wildcards) ) ) )
 	${CC} $^ -o $@ $(include_libs)

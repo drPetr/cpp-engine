@@ -12,8 +12,9 @@ public:
                     controlled_camera( const vec3 &pos, const vec3 &dir, const vec3 &up ) :
                             camera( pos, dir, up ) {}
 
+    void            update_movement();
+
     virtual bool    on_mouse_move( const vec2 &move ) override;
-    mat4            operator()();
 private:
 };
 

@@ -18,8 +18,8 @@ bool controlled_camera::on_mouse_move( const vec2 &move ) {
     return true;
 }
 
-/* controlled_camera::operator() */
-mat4 controlled_camera::operator()() {
+/* controlled_camera::update_movement */
+void controlled_camera::update_movement() {
     vec3 mov{0.0, 0.0, 0.0};
     if( controlled_camera::is_key_pressed(VKRAW_W) ) {
         mov += get_direction();
@@ -39,8 +39,7 @@ mat4 controlled_camera::operator()() {
     if( controlled_camera::is_key_pressed(VKRAW_SHIFT) ) {
         mov -= get_up();
     }
-    move( mov * 0.07 );
-    return camera::operator()();
+    move( mov * 0.25 );
 }
 
 } /* namespace engine */

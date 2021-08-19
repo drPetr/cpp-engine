@@ -8,6 +8,10 @@
 
 namespace engine {
 
+typedef unsigned char   byte;
+typedef unsigned short  word;
+typedef unsigned int    dword;
+
 typedef HWND    whandle_t;
 
 template <class T>
@@ -36,7 +40,8 @@ public:
 
 
 
-
+typedef ::std::ifstream      ifstream;
+typedef ::std::ofstream      ofstream;
 typedef ::std::istream      istream;
 typedef ::std::ostream      ostream;
 typedef ::std::iostream     iostream;

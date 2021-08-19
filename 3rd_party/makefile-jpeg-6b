@@ -1,0 +1,18 @@
+program_name := ../libjpeg.a
+source_dirs  := jpeg-6b
+
+source_dirs      := $(addprefix ../,$(source_dirs))
+search_wildcards := $(addsuffix /*.c,$(source_dirs))
+
+CC:= gcc
+INCLUDE:= -Ijpeg-6b/
+
+$(program_name): $(notdir $(patsubst %.c,%.o, $(wildcard $(search_wildcards) ) ) )
+	ar ru $@ $^
+
+VPATH := $(source_dirs) 
+
+%.o: %.c
+	${CC} -c -MD $(compile_flags) $(INCLUDE) $<
+
+include $(wildcard *.d) 

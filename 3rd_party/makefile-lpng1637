@@ -1,0 +1,18 @@
+program_name := ../libpng.a
+source_dirs  := lpng1637
+
+source_dirs      := $(addprefix ../,$(source_dirs))
+search_wildcards := $(addsuffix /*.c,$(source_dirs))
+
+CC:= gcc
+INCLUDE:= -Ilpng1637/ -Izlib-1.2.11/
+
+$(program_name): $(notdir $(patsubst %.c,%.o, $(wildcard $(search_wildcards) ) ) )
+	ar ru $@ $^
+
+VPATH := $(source_dirs) 
+
+%.o: %.c
+	${CC} -c -MD $(compile_flags) $(INCLUDE) $<
+
+include $(wildcard *.d) 

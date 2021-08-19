@@ -5,6 +5,7 @@ namespace engine {
 present_vertex draw_vertex::get_present_vertex() {
     present_vertex present;
     present.add_present_attrib( PRESENT_VERTEX_ATTRIB_XYZ );
+    present.add_present_attrib( PRESENT_VERTEX_ATTRIB_UV );
     assert( sizeof(draw_vertex) == present.vertexSize );
     return std::move(present);
 }

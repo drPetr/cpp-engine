@@ -8,6 +8,7 @@ class uniform {
 public:
                         uniform( GLint var ) : var{var} {}
     void                set( const mat4 &m );
+    void                set( int i );
     bool                is_valid();
 private:
     GLint               var{-1};

@@ -1,0 +1,175 @@
+Detecting C compiler ABI info failed to compile with the following output:
+Change Dir: C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Windows/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe cmTC_b39e5.vcxproj /p:Configuration=Debug /p:Platform=Win32 /p:VisualStudioVersion=10.0 /v:m && Microsoft (R) Build Engine Version 4.0.30319.36213
+[Microsoft .NET Framework версии 4.0.30319.36213]
+ (C) Корпорация Майкрософт (Microsoft Corp.), 2007.
+
+  Оптимизирующий 32-разрядный компилятор Microsoft (R) C/C++ версии 16.00.30319.01 для 80x86
+  (C) Корпорация Майкрософт (Microsoft Corporation). Все права защищены.
+  
+  CMakeCCompilerABI.c
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"cmTC_b39e5.dir\Debug\\" /Fd"cmTC_b39e5.dir\Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:queue "..\..\..\..\..\..\..\..\Program Files\CMake\share\cmake-3.18\Modules\CMakeCCompilerABI.c"
+  
+LINK : fatal error LNK1123: ёсющ яЁш яЁхюсЁрчютрэшш т COFF: Їрщы эхфюяєёЄшь шыш яютЁхцфхэ [C:\Users\Petr\Desktop\cpp-engine\3rd_party\openal-soft\CMakeFiles\CMakeTmp\cmTC_b39e5.vcxproj]
+
+
+
+
+Determining if the C compiler works failed with the following output:
+Change Dir: C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Windows/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe cmTC_f1560.vcxproj /p:Configuration=Debug /p:Platform=Win32 /p:VisualStudioVersion=10.0 /v:m && Microsoft (R) Build Engine Version 4.0.30319.36213
+[Microsoft .NET Framework версии 4.0.30319.36213]
+ (C) Корпорация Майкрософт (Microsoft Corp.), 2007.
+
+  Оптимизирующий 32-разрядный компилятор Microsoft (R) C/C++ версии 16.00.30319.01 для 80x86
+  (C) Корпорация Майкрософт (Microsoft Corporation). Все права защищены.
+  
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"cmTC_f1560.dir\Debug\\" /Fd"cmTC_f1560.dir\Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:queue testCCompiler.c
+  
+  testCCompiler.c
+LINK : fatal error LNK1123: ёсющ яЁш яЁхюсЁрчютрэшш т COFF: Їрщы эхфюяєёЄшь шыш яютЁхцфхэ [C:\Users\Petr\Desktop\cpp-engine\3rd_party\openal-soft\CMakeFiles\CMakeTmp\cmTC_f1560.vcxproj]
+
+
+
+Detecting C compiler ABI info failed to compile with the following output:
+Change Dir: C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Windows/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe cmTC_2bf99.vcxproj /p:Configuration=Debug /p:Platform=Win32 /p:VisualStudioVersion=10.0 /v:m && Microsoft (R) Build Engine Version 4.0.30319.36213
+[Microsoft .NET Framework версии 4.0.30319.36213]
+ (C) Корпорация Майкрософт (Microsoft Corp.), 2007.
+
+  Оптимизирующий 32-разрядный компилятор Microsoft (R) C/C++ версии 16.00.30319.01 для 80x86
+  (C) Корпорация Майкрософт (Microsoft Corporation). Все права защищены.
+  
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"cmTC_2bf99.dir\Debug\\" /Fd"cmTC_2bf99.dir\Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:queue "..\..\..\..\..\..\..\..\Program Files\CMake\share\cmake-3.18\Modules\CMakeCCompilerABI.c"
+  
+  CMakeCCompilerABI.c
+LINK : fatal error LNK1123: ёсющ яЁш яЁхюсЁрчютрэшш т COFF: Їрщы эхфюяєёЄшь шыш яютЁхцфхэ [C:\Users\Petr\Desktop\cpp-engine\3rd_party\openal-soft\CMakeFiles\CMakeTmp\cmTC_2bf99.vcxproj]
+
+
+
+
+Determining if the C compiler works failed with the following output:
+Change Dir: C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Windows/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe cmTC_3f7a6.vcxproj /p:Configuration=Debug /p:Platform=Win32 /p:VisualStudioVersion=10.0 /v:m && Microsoft (R) Build Engine Version 4.0.30319.36213
+[Microsoft .NET Framework версии 4.0.30319.36213]
+ (C) Корпорация Майкрософт (Microsoft Corp.), 2007.
+
+  Оптимизирующий 32-разрядный компилятор Microsoft (R) C/C++ версии 16.00.30319.01 для 80x86
+  (C) Корпорация Майкрософт (Microsoft Corporation). Все права защищены.
+  
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"cmTC_3f7a6.dir\Debug\\" /Fd"cmTC_3f7a6.dir\Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:queue testCCompiler.c
+  
+  testCCompiler.c
+LINK : fatal error LNK1123: ёсющ яЁш яЁхюсЁрчютрэшш т COFF: Їрщы эхфюяєёЄшь шыш яютЁхцфхэ [C:\Users\Petr\Desktop\cpp-engine\3rd_party\openal-soft\CMakeFiles\CMakeTmp\cmTC_3f7a6.vcxproj]
+
+
+
+Detecting C compiler ABI info failed to compile with the following output:
+Change Dir: C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Windows/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe cmTC_dc0ee.vcxproj /p:Configuration=Debug /p:Platform=Win32 /p:VisualStudioVersion=10.0 /v:m && Microsoft (R) Build Engine Version 4.0.30319.36213
+[Microsoft .NET Framework версии 4.0.30319.36213]
+ (C) Корпорация Майкрософт (Microsoft Corp.), 2007.
+
+  Оптимизирующий 32-разрядный компилятор Microsoft (R) C/C++ версии 16.00.30319.01 для 80x86
+  (C) Корпорация Майкрософт (Microsoft Corporation). Все права защищены.
+  
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"cmTC_dc0ee.dir\Debug\\" /Fd"cmTC_dc0ee.dir\Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:queue "..\..\..\..\..\..\..\..\Program Files\CMake\share\cmake-3.18\Modules\CMakeCCompilerABI.c"
+  
+  CMakeCCompilerABI.c
+LINK : fatal error LNK1123: ёсющ яЁш яЁхюсЁрчютрэшш т COFF: Їрщы эхфюяєёЄшь шыш яютЁхцфхэ [C:\Users\Petr\Desktop\cpp-engine\3rd_party\openal-soft\CMakeFiles\CMakeTmp\cmTC_dc0ee.vcxproj]
+
+
+
+
+Determining if the C compiler works failed with the following output:
+Change Dir: C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Windows/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe cmTC_227b7.vcxproj /p:Configuration=Debug /p:Platform=Win32 /p:VisualStudioVersion=10.0 /v:m && Microsoft (R) Build Engine Version 4.0.30319.36213
+[Microsoft .NET Framework версии 4.0.30319.36213]
+ (C) Корпорация Майкрософт (Microsoft Corp.), 2007.
+
+  Оптимизирующий 32-разрядный компилятор Microsoft (R) C/C++ версии 16.00.30319.01 для 80x86
+  (C) Корпорация Майкрософт (Microsoft Corporation). Все права защищены.
+  
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"cmTC_227b7.dir\Debug\\" /Fd"cmTC_227b7.dir\Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:queue testCCompiler.c
+  
+  testCCompiler.c
+LINK : fatal error LNK1123: ёсющ яЁш яЁхюсЁрчютрэшш т COFF: Їрщы эхфюяєёЄшь шыш яютЁхцфхэ [C:\Users\Petr\Desktop\cpp-engine\3rd_party\openal-soft\CMakeFiles\CMakeTmp\cmTC_227b7.vcxproj]
+
+
+
+Detecting C compiler ABI info failed to compile with the following output:
+Change Dir: C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Windows/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe cmTC_9cb77.vcxproj /p:Configuration=Debug /p:Platform=Win32 /p:VisualStudioVersion=10.0 /v:m && Microsoft (R) Build Engine Version 4.0.30319.36213
+[Microsoft .NET Framework версии 4.0.30319.36213]
+ (C) Корпорация Майкрософт (Microsoft Corp.), 2007.
+
+  Оптимизирующий 32-разрядный компилятор Microsoft (R) C/C++ версии 16.00.30319.01 для 80x86
+  (C) Корпорация Майкрософт (Microsoft Corporation). Все права защищены.
+  
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"cmTC_9cb77.dir\Debug\\" /Fd"cmTC_9cb77.dir\Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:queue "..\..\..\..\..\..\..\..\Program Files\CMake\share\cmake-3.18\Modules\CMakeCCompilerABI.c"
+  
+  CMakeCCompilerABI.c
+LINK : fatal error LNK1123: ёсющ яЁш яЁхюсЁрчютрэшш т COFF: Їрщы эхфюяєёЄшь шыш яютЁхцфхэ [C:\Users\Petr\Desktop\cpp-engine\3rd_party\openal-soft\CMakeFiles\CMakeTmp\cmTC_9cb77.vcxproj]
+
+
+
+
+Determining if the C compiler works failed with the following output:
+Change Dir: C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Windows/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe cmTC_bc23f.vcxproj /p:Configuration=Debug /p:Platform=Win32 /p:VisualStudioVersion=10.0 /v:m && Microsoft (R) Build Engine Version 4.0.30319.36213
+[Microsoft .NET Framework версии 4.0.30319.36213]
+ (C) Корпорация Майкрософт (Microsoft Corp.), 2007.
+
+  Оптимизирующий 32-разрядный компилятор Microsoft (R) C/C++ версии 16.00.30319.01 для 80x86
+  (C) Корпорация Майкрософт (Microsoft Corporation). Все права защищены.
+  
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"cmTC_bc23f.dir\Debug\\" /Fd"cmTC_bc23f.dir\Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:queue testCCompiler.c
+  
+  testCCompiler.c
+LINK : fatal error LNK1123: ёсющ яЁш яЁхюсЁрчютрэшш т COFF: Їрщы эхфюяєёЄшь шыш яютЁхцфхэ [C:\Users\Petr\Desktop\cpp-engine\3rd_party\openal-soft\CMakeFiles\CMakeTmp\cmTC_bc23f.vcxproj]
+
+
+
+Detecting C compiler ABI info failed to compile with the following output:
+Change Dir: C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Windows/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe cmTC_2f8ec.vcxproj /p:Configuration=Debug /p:Platform=Win32 /p:VisualStudioVersion=10.0 /v:m && Microsoft (R) Build Engine Version 4.0.30319.36213
+[Microsoft .NET Framework версии 4.0.30319.36213]
+ (C) Корпорация Майкрософт (Microsoft Corp.), 2007.
+
+  Оптимизирующий 32-разрядный компилятор Microsoft (R) C/C++ версии 16.00.30319.01 для 80x86
+  (C) Корпорация Майкрософт (Microsoft Corporation). Все права защищены.
+  
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"cmTC_2f8ec.dir\Debug\\" /Fd"cmTC_2f8ec.dir\Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:queue "..\..\..\..\..\..\..\..\Program Files\CMake\share\cmake-3.18\Modules\CMakeCCompilerABI.c"
+  
+  CMakeCCompilerABI.c
+LINK : fatal error LNK1123: ёсющ яЁш яЁхюсЁрчютрэшш т COFF: Їрщы эхфюяєёЄшь шыш яютЁхцфхэ [C:\Users\Petr\Desktop\cpp-engine\3rd_party\openal-soft\CMakeFiles\CMakeTmp\cmTC_2f8ec.vcxproj]
+
+
+
+
+Determining if the C compiler works failed with the following output:
+Change Dir: C:/Users/Petr/Desktop/cpp-engine/3rd_party/openal-soft/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Windows/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe cmTC_38c22.vcxproj /p:Configuration=Debug /p:Platform=Win32 /p:VisualStudioVersion=10.0 /v:m && Microsoft (R) Build Engine Version 4.0.30319.36213
+[Microsoft .NET Framework версии 4.0.30319.36213]
+ (C) Корпорация Майкрософт (Microsoft Corp.), 2007.
+
+  Оптимизирующий 32-разрядный компилятор Microsoft (R) C/C++ версии 16.00.30319.01 для 80x86
+  (C) Корпорация Майкрософт (Microsoft Corporation). Все права защищены.
+  
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"cmTC_38c22.dir\Debug\\" /Fd"cmTC_38c22.dir\Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:queue testCCompiler.c
+  
+  testCCompiler.c
+LINK : fatal error LNK1123: ёсющ яЁш яЁхюсЁрчютрэшш т COFF: Їрщы эхфюяєёЄшь шыш яютЁхцфхэ [C:\Users\Petr\Desktop\cpp-engine\3rd_party\openal-soft\CMakeFiles\CMakeTmp\cmTC_38c22.vcxproj]
+
+
+
