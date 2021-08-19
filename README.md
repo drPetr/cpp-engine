@@ -8,4 +8,4 @@
 6. Compile main program:
 7. ```make_debug.bat``` **or:** ```make_release.bat```
 8. And run program: ```app.exe```
-9. In program use next keys: **W**, **A**, **S**, **D**, **F1**, **F2**, **F3**, **F5**, **F6**, **Esc**
+9. In program use next keys: **W**, **A**, **S**, **D**, **LShift**, **Space**, **F1**, **F2**, **F3**, **F5**, **F6**, **Esc**
