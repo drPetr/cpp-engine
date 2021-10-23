@@ -1,5 +1,5 @@
 #include "uniform.h"
-#include <core/assert.h>
+#include <core/assert.hpp>
 namespace engine {
 
 /* uniform::set */

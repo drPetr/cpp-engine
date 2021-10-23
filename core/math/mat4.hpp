@@ -1,24 +1,30 @@
 #pragma once
-#include "vec4.h"
-#include "vec3.h"
+#include "vec4.hpp"
+#include "vec3.hpp"
 #include <utility>
-#include <core/assert.h>
-namespace engine {
-namespace math {
+#include <core/assert.hpp>
 
-class alignas(alignof(float) * 4) mat4 {
+namespace engine::core::math
+{
+
+class alignas(alignof(float) * 4) mat4
+{
 public:
     typedef float   type;
+
 public:
                     mat4() {}
-    explicit        mat4( const vec4 &x, const vec4 &y, const vec4 &z, const vec4 &w ) :
-                            x{x}, y{y}, z{z}, w{w} {}
+    explicit        mat4( const vec4 &x, const vec4 &y, const vec4 &z, const vec4 &w )
+                            : x{x}, y{y}, z{z}, w{w} {}
     explicit        mat4( const type xx, const type xy, const type xz, const type xw,
-                          const type yx, const type yy, const type yz, const type yw,
-                          const type zx, const type zy, const type zz, const type zw,
-                          const type wx, const type wy, const type wz, const type ww ) :
-                            x{xx, xy, xz, xw}, y{yx, yy, yz, yw}, 
-                            z{zx, zy, zz, zw}, w{wx, wy, wz, ww} {}
+                            const type yx, const type yy, const type yz, const type yw,
+                            const type zx, const type zy, const type zz, const type zw,
+                            const type wx, const type wy, const type wz, const type ww 
+                    ) :
+                            x{xx, xy, xz, xw},
+                            y{yx, yy, yz, yw},
+                            z{zx, zy, zz, zw},
+                            w{wx, wy, wz, ww} {}
 
     const vec4      &operator[]( int index ) const;
     vec4            &operator[]( int index );
@@ -45,7 +51,7 @@ public:
 
 public:
     vec4            x, y, z, w;
-};
+}; /* class mat4 */
 
 extern const mat4 MAT4_ZERO;
 extern const mat4 MAT4_IDENTITY;
@@ -53,36 +59,41 @@ extern const mat4 MAT4_IDENTITY;
 
 
 /* mat4::operator[] */
-inline const vec4 &mat4::operator[]( int index ) const {
-    assert(index >= 0 && index < 4);
+inline const vec4 &mat4::operator[]( int index ) const
+{
+    math_asserta( index >= 0 && index < 4, "index: %d", index );
     return (&x)[ index ];
 }
 
 /* mat4::operator[] */
-inline vec4 &mat4::operator[]( int index ) {
-    assert(index >= 0 && index < 4);
+inline vec4 &mat4::operator[]( int index )
+{
+    math_asserta( index >= 0 && index < 4, "index: %d", index );
     return (&x)[ index ];
 }
 
 /* mat4::zero */
-inline void mat4::zero() {
+inline void mat4::zero()
+{
     *this = MAT4_ZERO;
 }
 
 /* mat4::identity */
-inline void mat4::identity() {
+inline void mat4::identity()
+{
     *this = MAT4_IDENTITY;
 }
 
 /* mat4::get_ptr */
-inline const mat4::type *mat4::get_ptr() const {
+inline const mat4::type *mat4::get_ptr() const
+{
     return &x.x;
 }
 
 /* mat4::get_ptr */
-inline mat4::type *mat4::get_ptr() {
+inline mat4::type *mat4::get_ptr()
+{
     return &x.x;
 }
 
-} /* namespace math */
-} /* namespace engine */
+} /* namespace engine::core::math */

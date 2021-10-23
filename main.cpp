@@ -3,24 +3,28 @@
 #include <wingdi.h>
 #include <cmath>
 #include <memory>
-#include <core/assert.h>
-#include <core/timer.h>
-#include <core/math.h>
-#include <core/file_system.h>
-#include <core/types.h>
+#include <core/string.hpp>
+#include <core/assert.hpp>
+#include <core/timer.hpp>
+#include <core/math.hpp>
+#include <core/filesystem.hpp>
+#include <core/types.hpp>
 #include <renderer/opengl/gl.h>
 #include <engine/object3d_location.h>
 #include <engine/mesh.h>
 #include <renderer/shader.h>
 #include <engine/controlled_camera.h>
-#include <core/common.h>
-#include <core/filesystem.h>
+#include <core/common.hpp>
+#include <core/filesystem.hpp>
 #include <engine/onoff_key.h>
 #include <renderer/image.h>
+#include <core/shared_ptr.hpp>
+#include <core/unique_ptr.hpp>
 #include <cstdlib>
 #include <ctime>
-using namespace engine::math;
-using namespace engine::input;
+using namespace engine::core::math;
+using namespace engine::core::input;
+using namespace engine::core;
 
 namespace engine {
 
@@ -72,7 +76,7 @@ protected:
     string          title = {"Window"};
     bool            isCreate = {false};
     whandle_t       handle = {nullptr};
-    rect2d          rect = {{0, 0}, {1366, 768}};
+    rectangle       rect = {0, 0, 1366, 768};
 };
 
 
@@ -96,10 +100,10 @@ void window::create() {
         wcex.lpfnWndProc = static_cast<WNDPROC>(main_wnd_proc);
         wcex.cbClsExtra = 0;
         wcex.cbWndExtra = 0;
-        wcex.hInstance = (HINSTANCE)GetModuleHandleA( nullptr );
+        wcex.hInstance = static_cast<HINSTANCE>(GetModuleHandleA( nullptr ));
         wcex.hIcon = LoadIcon(NULL, IDI_APPLICATION);
         wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-        wcex.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+        wcex.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
         wcex.lpszMenuName =  NULL;
         wcex.lpszClassName = "__UserWindowClassName";
         wcex.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
@@ -115,7 +119,7 @@ void window::create() {
         "__UserWindowClassName",
         title.c_str(),
         WS_OVERLAPPEDWINDOW,
-        rect.position.x, rect.position.y, rect.size.width, rect.size.height,
+        rect.left(), rect.top(), rect.width(), rect.height(),
         NULL,   /* (HWND) parent window */
         NULL,   /* (HMENU) window menu */
         wcex.hInstance,
@@ -128,7 +132,7 @@ void window::create() {
 
 /* window::destroy */
 void window::destroy() {
-    raw_input::initialize( 0 );
+    raw_input::initialize( nullptr );
     DestroyWindow( handle );
     handle = nullptr;
     isCreate = false;
@@ -168,38 +172,41 @@ void window::set_title( const string &title ) {
 
 /* window::set_location */
 void window::set_location( const point2d &point ) {
-    rect.position = point;
+    rect += point;
     if( isCreate ) {
         MoveWindow( handle, point.x, point.y, 
-                rect.size.width, rect.size.height, FALSE );
+                rect.width(), rect.height(), FALSE );
     }
 }
 
 /* window::set_size */
 void window::set_size( const size2d &size ) {
-    rect.size = size;
+    rect.max = rect.min + size;
     if( isCreate ) {
-        MoveWindow( handle, rect.position.x, rect.position.y, 
-                size.width, size.height, FALSE );
+        MoveWindow( handle, rect.left(), rect.top(), 
+                rect.width(), rect.height(), FALSE );
     }
 }
 
 /* window::get_location */
 const point2d &window::get_location() {
     if( RECT rc; isCreate && GetClientRect( handle, &rc ) ) {
-        rect.position.x = rc.left;
-        rect.position.y = rc.top;
+        rect.left() = rc.left;
+        rect.top() = rc.top;
     }
-    return rect.position;
+    return rect.min;
 }
 
 /* window::get_size */
 const size2d &window::get_size() {
     if( RECT rc; isCreate && GetClientRect( handle, &rc ) ) {
-        rect.size.width = rc.right - rc.left;
-        rect.size.height = rc.bottom - rc.top;
+        rect.left() = rc.left;
+        rect.right() = rc.right;
+        rect.top() = rc.top;
+        rect.bottom() = rc.bottom;
     }
-    return rect.size;
+    auto s( rect.size() );
+    return std::move(s);
 }
 
 /* window::get_handle */
@@ -229,8 +236,6 @@ void window::process_messages() {
         }
     } while( peek );
 }
-
-
 
 
 struct mesh_binding {
@@ -432,6 +437,7 @@ GLenum opengl_render::primitive_type_to_gl_type( primitive_type type ) {
 
 } /* namespace engine */
 using namespace engine;
+using namespace engine::core;
 
 
 
@@ -452,11 +458,9 @@ struct temp_s {
 };
 
 
- 
 #define __unused(v)   static_cast<void>(v)
 int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow ) {
     __unused(hInst); __unused(hPrevInst); __unused(lpCmdLine); __unused(nCmdShow);
-
 
     renderer::image img;
     core::timer tm;
@@ -468,17 +472,15 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
 
     //return 0;
 
-    window w;
-    w.align_center();
-    w.create();
-    w.show();
+    core::unique_ptr<window> w {new window()};
+    //window *w = new window();
+    w->align_center();
+    w->create();
+    w->show();
 
-    opengl_render render( w.get_handle() );
-    
+    opengl_render render( w->get_handle() );
 
 
-
-    
 
     shader sh;
     sh.load( "shader.vsh", "shader.fsh" );
@@ -610,7 +612,7 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
         if( raw_input::is_key_pressed(VKRAW_ESCAPE) ) {
             appIsRun = false;
         }
-        w.process_messages();
+        w->process_messages();
 
         if( raw_input::is_key_pressed(VKRAW_F1) && currentKey != VKRAW_F1 ) {
             currentKey = VKRAW_F1;
@@ -650,7 +652,7 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
         auto msec = timer.time_sec();
         __unused(msec);
 
-        glViewport( 0, 0, w.get_size().width, w.get_size().height );
+        glViewport( 0, 0, w->get_size().width, w->get_size().height );
 
         loc.set_scale( vec3(0.5,  0.5,  0.5) );
         loc.set_position( vec3(0.0, 10.0, 0.0) );
@@ -663,7 +665,7 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
         loc3.set_position( vec3(-5.0, 5.0, 0.0) );
         loc3.rotate( qu );
 
-        cam.set_perspective_projection( pi / 3.0, w.get_aspect(), 0.1, 1000 );
+        cam.set_perspective_projection( pi / 3.0, w->get_aspect(), 0.1, 1000 );
 
 
         render.clear();

@@ -1,6 +1,11 @@
 #pragma once
-#include <core/types.h>
-#include <core/assert.h>
+#include <core/types.hpp>
+#include <core/vector.hpp>
+#include <core/assert.hpp>
+#include <core/string.hpp>
+
+using namespace engine::core;
+
 namespace engine {
 namespace renderer {
 
@@ -34,8 +39,8 @@ public:
     bool            save_to_file( const string &name, int quality = 95, const pixel_format fmt = PIXEL_FORMAT_AUTO, image_format imfmt = IMAGE_FORMAT_AUTO );
 
                     /* returns pointer to pixel */
-    byte            *get_pixel_ptr( int x, int y );
-    byte            *get_line_ptr( int y );
+    byte *          get_pixel_ptr( int x, int y );
+    byte *          get_line_ptr( int y );
     
                     /* horizontal / vertical flip processing */
     void            horizontal_flip();
@@ -75,7 +80,7 @@ protected:
 
     bool            load_png( istream &is, pixel_format fmt );
 
-    vector<byte>    data;           /* pixels data */
+    core::vector<byte>    data;           /* pixels data */
     int             width{0};
     int             height{0};
     int             stride{0};      /* image line pitch */

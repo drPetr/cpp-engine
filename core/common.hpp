@@ -1,7 +1,9 @@
 #pragma once
-#include <core/types.h>
+#include <core/types.hpp>
 #include <iostream>
-namespace engine {
+
+namespace engine
+{
 
 class common {
 public:

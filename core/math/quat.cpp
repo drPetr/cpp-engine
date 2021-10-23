@@ -1,11 +1,13 @@
-#include "quat.h"
-namespace engine {
-namespace math {
+#include "quat.hpp"
+
+namespace engine::core::math
+{
 
 const quat QUAT_ZERO { 0.0, 0.0, 0.0, 1.0 };
 
 /* quat::to_mat4 */
-mat4 quat::to_mat4() {
+mat4 quat::to_mat4()
+{
     auto x2 = x + x;
     auto y2 = y + y;
     auto z2 = z + z;
@@ -26,5 +28,4 @@ mat4 quat::to_mat4() {
     );
 }
 
-} /* namespace math */
-} /* namespace engine */
+} /* namespace engine::core::math */

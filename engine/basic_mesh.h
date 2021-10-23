@@ -1,6 +1,7 @@
 #pragma once
-#include <core/types.h>
-#include <core/assert.h>
+#include <core/types.hpp>
+#include <core/vector.hpp>
+#include <core/assert.hpp>
 #include "basic_mesh_present.h"
 namespace engine {
 
@@ -30,8 +31,8 @@ protected:
     void                add_indices( const char *ind, int size, int num );
 
 protected:
-    vector<char>        vertices;   /* mesh vertices */
-    vector<char>        indices;    /* mesh indices */
+    core::vector<char>  vertices;   /* mesh vertices */
+    core::vector<char>  indices;    /* mesh indices */
     present_vertex      presentVertex;  
     present_index       presentIndex;   /* index buffer bits 0, 1, 2 or 4 */
     present_drawing     presentDrawing;

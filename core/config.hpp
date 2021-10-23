@@ -1,0 +1,15 @@
+#pragma once
+
+#define ENABLED                     1
+#define DISABLED                    0
+
+#define PLATFORM_WIN64_ENABLED      ENABLED
+
+#define DEBUG_ENABLED               ENABLED
+#define CORE_DEBUG_ENABLED          DEBUG_ENABLED
+
+#define ASSERT_ENABLED              DEBUG_ENABLED
+
+#define CORE_ASSERT_ENABLED         ASSERT_ENABLED && CORE_DEBUG_ENABLED
+#define MATH_ASSERT_ENABLED         CORE_ASSERT_ENABLED
+#define CONTAINERS_ASSERT_ENABLED   CORE_ASSERT_ENABLED

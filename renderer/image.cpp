@@ -1,7 +1,7 @@
 #include "image.h"
-#include <core/common.h>
-#include <core/filesystem.h>
-#include <core/math.h>
+#include <core/common.hpp>
+#include <core/filesystem.hpp>
+#include <core/math.hpp>
 extern "C" {
 #include <jpeg-6b/jpeglib.h>
 #include <jpeg-6b/jdatarw.h>
@@ -380,14 +380,14 @@ static fnPxcvtFunc get_pxcvt_func( pixel_format from, pixel_format to ) {
 
 /* pixel comparer */
 static int pxcmp_8( const byte *a, const byte *b ) {
-    return (int)*a - *b;
+    return static_cast<int>(*a - *b);
 }
 
 static int pxcmp_24( const byte *a, const byte *b ) {
     int cmp = 0;
     for( int i = 0; i < 3; i++ ) {
         int c = a[i] - b[i];
-        if( math::abs(c) > math::abs(cmp) ) {
+        if( core::math::abs(c) > core::math::abs(cmp) ) {
             cmp = c;
         }
     }
@@ -398,7 +398,7 @@ static int pxcmp_32( const byte *a, const byte *b ) {
     int cmp = 0;
     for( int i = 0; i < 4; i++ ) {
         int c = a[i] - b[i];
-        if( math::abs(c) > math::abs(cmp) ) {
+        if( core::math::abs(c) > core::math::abs(cmp) ) {
             cmp = c;
         }
     }
@@ -942,7 +942,7 @@ bool image::save_tga( ostream &os, pixel_format fmt, bool rle, byte compress ) {
             cvt( firstPx, buffer + 1 );
             for( ; (i + k < pxCount) && (k < 128); k++ ) {
                 auto px = get_linear_pixel_ptr( i + k );
-                if( math::abs( cmp( firstPx, px ) ) > compress ) {
+                if( core::math::abs( cmp( firstPx, px ) ) > compress ) {
                     break;
                 }
             }
@@ -959,7 +959,7 @@ bool image::save_tga( ostream &os, pixel_format fmt, bool rle, byte compress ) {
             auto prevPx = firstPx;
             for( ; (i + k < pxCount) && (k < 128); k++ ) {
                 auto px = get_linear_pixel_ptr( i + k );
-                if( math::abs( cmp( prevPx, px ) ) <= compress ) {
+                if( core::math::abs( cmp( prevPx, px ) ) <= compress ) {
                     break;
                 }
                 /* copy pixel */
@@ -1034,7 +1034,7 @@ typedef struct my_error_mgr * my_error_ptr;
 void my_error_exit (j_common_ptr cinfo)
 {
   /* cinfo->err really points to a my_error_mgr struct, so coerce pointer */
-  my_error_ptr myerr = (my_error_ptr) cinfo->err;
+  my_error_ptr myerr = reinterpret_cast<my_error_ptr>(cinfo->err);
 
   /* Always display the message. */
   /* We could postpone this until after returning, if we chose. */
@@ -1336,7 +1336,7 @@ bool image::save_jpg( ostream &os, pixel_format fmt, int quality ) {
   auto cvt = get_pxcvt_func( this->fmt, fmt );
   auto jpgPxSize = pixel_format_to_bpp( fmt ) >> 3;
   auto srcPxSize = get_bpp() >> 3;
-  vector<byte> bufferCvtData;
+  core::vector<byte> bufferCvtData;
   bufferCvtData.reserve( jpgPxSize * this->width );
   byte *jpgDataPtr = bufferCvtData.data();
 
@@ -1542,7 +1542,7 @@ bool image::load_png( istream &is, pixel_format fmt ) {
     
     int pngPxSize = pixel_format_to_bpp( pngFmt ) >> 3;
     int pxSize = get_bpp() >> 3;
-    vector<byte> tempData;
+    core::vector<byte> tempData;
     tempData.reserve( pngPxSize * width );
     byte *pngDataPtr = tempData.data();
     auto cvt = get_pxcvt_func( pngFmt, fmt );

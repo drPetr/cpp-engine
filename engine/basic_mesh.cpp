@@ -1,4 +1,8 @@
 #include "basic_mesh.h"
+#include <core/string.hpp>
+
+using namespace engine::core;
+
 namespace engine {
 
 /* basic_mesh::basic_mesh */

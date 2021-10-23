@@ -1,32 +1,36 @@
-#include "raw_input.h"
-#include <core/assert.h>
-#include <hidusage.h>
-#include <algorithm>
-namespace engine {
-namespace input {
+#include "raw_input.hpp"
+#include <core/assert.hpp>
 
-bool raw_input::keysPressed[256];
+#include <algorithm>
+
+namespace engine::core::input
+{
+
+bool raw_input::keysPressed[256]{false};
 bool raw_input::isInit {false};
-vector<iinput*> raw_input::focusStack;
+core::vector<i_input*> raw_input::focusStack;
 
 /* raw_input::~raw_input */
-raw_input::~raw_input() {
+raw_input::~raw_input()
+{
     detach_input();
 }
 
 /* raw_input::attach_input */
-void raw_input::attach_input() {
+void raw_input::attach_input()
+{
     assert( !is_attached() );
-    focusStack.push_back( dynamic_cast<iinput*>(this) );
+    focusStack.push_back( dynamic_cast<i_input*>(this) );
     attached = true;
 }
 
 /* raw_input::detach_input */
-void raw_input::detach_input() {
+void raw_input::detach_input()
+{
     if( !is_attached() ) {
         return;
     }
-    auto inp( dynamic_cast<iinput*>(this) );
+    auto inp( dynamic_cast<i_input*>(this) );
     if( focusStack.back() == inp ) {
         focusStack.pop_back();
     } else {
@@ -37,7 +41,8 @@ void raw_input::detach_input() {
 }
 
 /* raw_input::initialize */
-void raw_input::initialize( whandle_t handle ) {
+void raw_input::initialize( whandle_t handle )
+{
     assert( (handle && !isInit) || (!handle && isInit)  );
     static RAWINPUTDEVICE devieMouse;
     static RAWINPUTDEVICE devieKeyboard;
@@ -87,18 +92,14 @@ void raw_input::initialize( whandle_t handle ) {
     }
 }
 
-/* raw_input::is_key_pressed */
-bool raw_input::is_key_pressed( key dik ) {
-    return keysPressed[dik];
-}
-
 /* raw_input::process_input */
-void raw_input::process_input( LPARAM hRawInput ) {
+void raw_input::process_input( LPARAM hRawInput )
+{
     assert( isInit );
     unsigned char buffer[1024 * 8]; /* should have */
     RAWINPUT *rawInput( reinterpret_cast<RAWINPUT*>(buffer) );
     UINT rawInputSize( static_cast<UINT>(sizeof(buffer)) );
-    auto bytes( GetRawInputData( (HRAWINPUT)hRawInput, RID_INPUT, rawInput, &rawInputSize, sizeof(RAWINPUTHEADER)) );
+    auto bytes( GetRawInputData( reinterpret_cast<HRAWINPUT>(hRawInput), RID_INPUT, rawInput, &rawInputSize, sizeof(RAWINPUTHEADER)) );
     verify( bytes != 0x80000000 );
 
     switch( RAWINPUTHEADER &header = rawInput->header; header.dwType ) {
@@ -191,5 +192,4 @@ void raw_input::process_input( LPARAM hRawInput ) {
     }
 }
 
-} /* namespace core */
-} /* namespace engine */
+} /* namespace engine::core::input */

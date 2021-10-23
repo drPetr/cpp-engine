@@ -1,8 +1,8 @@
 #pragma once
 #include <renderer/opengl/gl.h>
-#include <core/math.h>
+#include <core/math.hpp>
 namespace engine {
-using namespace engine::math;
+using namespace engine::core::math;
 
 class uniform {
 public:

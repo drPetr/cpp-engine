@@ -1,6 +1,6 @@
 #include "camera.h"
 namespace engine {
-using namespace math;
+using namespace core::math;
 
 const mat4 MAT4_CAMERA_INITIAL { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 };
 

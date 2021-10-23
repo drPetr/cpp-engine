@@ -1,12 +1,14 @@
 #pragma once
-#include <core/assert.h>
-#include "vec3.h"
-#include "vec4.h"
-#include "mat4.h"
-namespace engine {
-namespace math {
+#include <core/assert.hpp>
+#include "vec3.hpp"
+#include "vec4.hpp"
+#include "mat4.hpp"
 
-class alignas(alignof(float) * 4) quat {
+namespace engine::core::math
+{
+
+class alignas(alignof(float) * 4) quat
+{
 public:
     typedef float   type;
 public:
@@ -41,12 +43,13 @@ public:
     type            *get_ptr();
 public:
     type            x, y, z, w;
-};
+}; /* class quat */
 
 extern const quat QUAT_ZERO;
 
 /* quat::quat */
-inline quat::quat( const vec3 &v, const type angle ) {
+inline quat::quat( const vec3 &v, const type angle )
+{
     auto [sin, cos] = sin_cos(angle / 2);
     auto sqLen( v.x * v.x + v.y * v.y + v.z * v.z );
     if( sqLen != 1.0 ) {
@@ -71,34 +74,40 @@ inline quat::quat( const vec3 &v, const type angle ) {
 }
 
 /* quat::operator[] */
-inline quat::type quat::operator[]( int index ) const {
-    assert(index >= 0 && index < 4);
+inline quat::type quat::operator[]( int index ) const
+{
+    math_asserta( index >= 0 && index < 4, "index: %d", index );
     return (&x)[ index ];
 }
 
 /* quat::operator[] */
-inline quat::type &quat::operator[]( int index ) {
-    assert(index >= 0 && index < 4);
+inline quat::type &quat::operator[]( int index )
+{
+    math_asserta( index >= 0 && index < 4, "index: %d", index );
     return (&x)[ index ];
 }
 
 /* quat::operator- */
-inline quat quat::operator-() const {
+inline quat quat::operator-() const
+{
     return quat( -x, -y, -z, -w );
 }
 
 /* quat::operator+ */
-inline quat quat::operator+( const quat &a ) const {
+inline quat quat::operator+( const quat &a ) const
+{
     return quat( x + a.x, y + a.y, z + a.z, w + a.w );
 }
 
 /* quat::operator- */
-inline quat quat::operator-( const quat &a ) const {
+inline quat quat::operator-( const quat &a ) const
+{
     return quat( x - a.x, y - a.y, z - a.z, w - a.w );
 }
 
 /* quat::operator* */
-inline quat quat::operator*( const quat &a ) const {
+inline quat quat::operator*( const quat &a ) const
+{
     return quat( w*a.x + x*a.w + y*a.z - z*a.y,
         w*a.y - x*a.z + y*a.w + z*a.x,
         w*a.z + x*a.y - y*a.x + z*a.w,
@@ -106,15 +115,16 @@ inline quat quat::operator*( const quat &a ) const {
 }
 
 /* quat::operator* */
-inline vec3 quat::operator*( const vec3 &a ) const {
-    auto xxzz = x * x - z * z;
-    auto wwyy = w * w - y * y;
-    auto xy2 = x * y * 2.0;
-    auto xz2 = x * z * 2.0;
-    auto xw2 = x * w * 2.0;
-    auto yw2 = y * w * 2.0;
-    auto yz2 = y * z * 2.0;
-    auto zw2 = z * w * 2.0;
+inline vec3 quat::operator*( const vec3 &a ) const
+{
+    type xxzz = x * x - z * z;
+    type wwyy = w * w - y * y;
+    type xy2 = x * y * 2.0;
+    type xz2 = x * z * 2.0;
+    type xw2 = x * w * 2.0;
+    type yw2 = y * w * 2.0;
+    type yz2 = y * z * 2.0;
+    type zw2 = z * w * 2.0;
     return vec3( 
         a.x * (xxzz + wwyy) + a.y * (xy2 + zw2) + a.z * (xz2 - yw2),
         a.x * (xy2 - zw2) + a.y * (y*y+w*w-x*x-z*z) + a.z * (yz2 + xw2),
@@ -123,12 +133,14 @@ inline vec3 quat::operator*( const vec3 &a ) const {
 }
 
 /* quat::operator* */
-inline quat quat::operator*( quat::type a ) const {
+inline quat quat::operator*( quat::type a ) const
+{
     return quat( x * a, y * a, z * a, w * a );
 }
 
 /* quat::operator+= */
-inline quat &quat::operator+=( const quat &a ) {
+inline quat &quat::operator+=( const quat &a )
+{
     x += a.x;
     y += a.y;
     z += a.z;
@@ -137,7 +149,8 @@ inline quat &quat::operator+=( const quat &a ) {
 }
 
 /* quat::operator-= */
-inline quat &quat::operator-=( const quat &a ) {
+inline quat &quat::operator-=( const quat &a )
+{
     x -= a.x;
     y -= a.y;
     z -= a.z;
@@ -146,13 +159,15 @@ inline quat &quat::operator-=( const quat &a ) {
 }
 
 /* quat::operator*= */
-inline quat &quat::operator*=( const quat &a ) {
+inline quat &quat::operator*=( const quat &a )
+{
     *this = *this * a;
     return *this;
 }
 
 /* quat::operator*= */
-inline quat &quat::operator*=( quat::type a ) {
+inline quat &quat::operator*=( quat::type a )
+{
     x *= a;
     y *= a;
     z *= a;
@@ -161,27 +176,32 @@ inline quat &quat::operator*=( quat::type a ) {
 }
 
 /* operator* */
-inline quat operator*( const quat::type a, const quat &b ) {
+inline quat operator*( const quat::type a, const quat &b )
+{
     return b * a;
 }
 
 /* operator* */
-inline vec3 operator*( const vec3 &a, const quat &b ) {
+inline vec3 operator*( const vec3 &a, const quat &b )
+{
     return b * a;
 }
 
 /* quat::inverse */
-inline quat quat::inverse() const {
+inline quat quat::inverse() const
+{
     return quat( -x, -y, -z, w );
 }
 
 /* quat::length */
-inline quat::type quat::length() const {
+inline quat::type quat::length() const
+{
     return sqrt( x * x + y * y + z * z + w * w );
 }
 
 /* quat::normalize */
-inline quat::type quat::normalize() {
+inline quat::type quat::normalize()
+{
     if( auto len = length(); len != 0.0 ) {
         auto inv = 1.0 / len;
         x *= inv;
@@ -193,5 +213,4 @@ inline quat::type quat::normalize() {
     return 0.0;
 }
 
-} /* namespace math */
-} /* namespace engine */
+} /* namespace engine::core::math */

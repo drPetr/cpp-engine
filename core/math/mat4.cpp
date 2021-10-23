@@ -1,13 +1,15 @@
-#include "mat4.h"
-#include "base_math.h"
-namespace engine {
-namespace math {
+#include "mat4.hpp"
+#include "base_math.hpp"
+
+namespace engine::core::math
+{
 
 const mat4 MAT4_ZERO { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 const mat4 MAT4_IDENTITY { 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 };
 
 /* mat4::operator* */
-vec4 mat4::operator*( const vec4 &a ) const {
+vec4 mat4::operator*( const vec4 &a ) const
+{
     return vec4(
         x.x * a.x + x.y * a.y + x.z * a.z + x.w * a.w,
         y.x * a.x + y.y * a.y + y.z * a.z + y.w * a.w,
@@ -17,7 +19,8 @@ vec4 mat4::operator*( const vec4 &a ) const {
 }
 
 /* mat4::operator* */
-vec3 mat4::operator*( const vec3 &a ) const {
+vec3 mat4::operator*( const vec3 &a ) const
+{
     auto scale = w.x * a.x + w.y * a.y + w.z * a.z + w.w;
     if( scale == 1.0 ) {
         return vec3(
@@ -38,7 +41,8 @@ vec3 mat4::operator*( const vec3 &a ) const {
 }
 
 /* mat4::operator* */
-mat4 mat4::operator*( const mat4 &a ) const {
+mat4 mat4::operator*( const mat4 &a ) const
+{
     mat4 mat;
     auto l = reinterpret_cast<const float*>(this);
     auto r = reinterpret_cast<const float*>(&a);
@@ -53,10 +57,12 @@ mat4 mat4::operator*( const mat4 &a ) const {
         }
         l += 4;
     }
-    return std::move(mat);
+    return mat;
 }
 
-mat4 mat4::operator+( const mat4 &a ) const {
+/* mat4::operator+ */
+mat4 mat4::operator+( const mat4 &a ) const
+{
     return mat4(
         x.x + a.x.x, x.y + a.x.y, x.z + a.x.z, x.w + a.x.w,
         y.x + a.y.x, y.y + a.y.y, y.z + a.y.z, y.w + a.y.w,
@@ -65,7 +71,10 @@ mat4 mat4::operator+( const mat4 &a ) const {
     );
 }
 
-mat4 mat4::operator-( const mat4 &a ) const {
+
+/* mat4::operator- */
+mat4 mat4::operator-( const mat4 &a ) const
+{
     return mat4(
         x.x - a.x.x, x.y - a.x.y, x.z - a.x.z, x.w - a.x.w,
         y.x - a.y.x, y.y - a.y.y, y.z - a.y.z, y.w - a.y.w,
@@ -74,13 +83,17 @@ mat4 mat4::operator-( const mat4 &a ) const {
     );
 }
 
-mat4 &mat4::operator*=( const mat4 &a ) {
+
+/* mat4::operator*= */
+mat4 &mat4::operator*=( const mat4 &a )
+{
     *this = (*this) * a;
     return *this;
 }
 
 /* mat4::operator+= */
-mat4 &mat4::operator+=( const mat4 &a ) {
+mat4 &mat4::operator+=( const mat4 &a )
+{
     x.x += a.x.x;
     x.y += a.x.y;
     x.z += a.x.z;
@@ -101,7 +114,8 @@ mat4 &mat4::operator+=( const mat4 &a ) {
 }
 
 /* mat4::operator-= */
-mat4 &mat4::operator-=( const mat4 &a ) {
+mat4 &mat4::operator-=( const mat4 &a )
+{
     x.x -= a.x.x;
     x.y -= a.x.y;
     x.z -= a.x.z;
@@ -122,7 +136,8 @@ mat4 &mat4::operator-=( const mat4 &a ) {
 }
 
 /* mat4::scale */
-mat4 mat4::scale( const vec3 &vScale ) {
+mat4 mat4::scale( const vec3 &vScale )
+{
     return mat4(
         vScale.x, 0.0, 0.0, 0.0,
         0.0, vScale.y, 0.0, 0.0,
@@ -132,11 +147,12 @@ mat4 mat4::scale( const vec3 &vScale ) {
 }
 
 /* mat4::rotation */
-mat4 mat4::rotation( const vec3 &vRotation ) {
+mat4 mat4::rotation( const vec3 &vRotation )
+{
     mat4 out;
     out.identity();
     if( vRotation.x != 0.0 ) {
-        auto [sin, cos] = engine::math::sin_cos( vRotation.x );
+        auto [sin, cos] = engine::core::math::sin_cos( vRotation.x );
         mat4 rx{
             1.0, 0.0, 0.0, 0.0,
             0.0, cos,-sin, 0.0,
@@ -146,7 +162,7 @@ mat4 mat4::rotation( const vec3 &vRotation ) {
         out *= rx;
     }
     if( vRotation.y != 0.0 ) {
-        auto [sin, cos] = engine::math::sin_cos( vRotation.y );
+        auto [sin, cos] = engine::core::math::sin_cos( vRotation.y );
         mat4 ry{
             cos, 0.0,-sin, 0.0,
             0.0, 1.0, 0.0, 0.0,
@@ -156,7 +172,7 @@ mat4 mat4::rotation( const vec3 &vRotation ) {
         out *= ry;
     }
     if( vRotation.z != 0.0 ) {
-        auto [sin, cos] = engine::math::sin_cos( vRotation.z );
+        auto [sin, cos] = engine::core::math::sin_cos( vRotation.z );
         mat4 rz{
             cos,-sin, 0.0, 0.0,
             sin, cos, 0.0, 0.0,
@@ -165,11 +181,12 @@ mat4 mat4::rotation( const vec3 &vRotation ) {
         };
         out *= rz;
     }
-    return std::move(out);
+    return out;
 }
 
 /* mat4::translation */
-mat4 mat4::translation( const vec3 &vTranslation ) {
+mat4 mat4::translation( const vec3 &vTranslation )
+{
     return mat4(
         1.0, 0.0, 0.0, vTranslation.x,
         0.0, 1.0, 0.0, vTranslation.y,
@@ -179,9 +196,10 @@ mat4 mat4::translation( const vec3 &vTranslation ) {
 }
 
 /* mat4::perspective */
-mat4 mat4::perspective( const type fov, const type aspect, const type near, const type far ) {
+mat4 mat4::perspective( const type fov, const type aspect, const type near, const type far )
+{
     auto range = near - far;
-    auto halfTan = engine::math::tan( fov / 2.0 );
+    auto halfTan = engine::core::math::tan( fov / 2.0 );
     return mat4(
         1.0 / (halfTan * aspect), 0.0, 0.0, 0.0,
         0.0, 1.0 / halfTan, 0.0, 0.0,
@@ -190,5 +208,4 @@ mat4 mat4::perspective( const type fov, const type aspect, const type near, cons
     );
 }
 
-} /* namespace math */
-} /* namespace engine */
+} /* namespace engine::core::math */

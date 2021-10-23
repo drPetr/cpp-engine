@@ -1,8 +1,8 @@
 #pragma once
-#include <core/math.h>
+#include <core/math.hpp>
 namespace engine {
 
-using namespace engine::math;
+using namespace engine::core::math;
 
 /* object3d_location
 * расположение трёхмерного объекта в пространстве

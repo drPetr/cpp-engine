@@ -1,5 +1,5 @@
 program_name := ../app 
-source_dirs  := . core core/math renderer renderer/opengl engine
+source_dirs  := . core core/math core/input renderer renderer/opengl engine core/platform/windows
 
 source_dirs      := $(addprefix ../,$(source_dirs))
 search_wildcards := $(addsuffix /*.cpp,$(source_dirs))

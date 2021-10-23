@@ -1,7 +1,9 @@
 #pragma once
-#include <core/math.h>
+#include <core/math.hpp>
+
+using namespace engine::core::math;
+
 namespace engine {
-using namespace math;
 
 extern const mat4 MAT4_CAMERA_INITIAL;
 

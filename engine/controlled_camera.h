@@ -1,20 +1,21 @@
 #pragma once
 #include "camera.h"
-#include <core/raw_input.h>
-using namespace engine::math;
-using namespace engine::input;
+#include <core/input.hpp>
+using namespace engine::core::math;
+
 namespace engine {
 
 class controlled_camera : 
         public camera, 
-        public input::raw_input {
+        public core::input::raw_input
+{
 public:
                     controlled_camera( const vec3 &pos, const vec3 &dir, const vec3 &up ) :
                             camera( pos, dir, up ) {}
 
     void            update_movement();
 
-    virtual bool    on_mouse_move( const vec2 &move ) override;
+    virtual bool    on_mouse_move( const point2d &move ) override;
 private:
 };
 

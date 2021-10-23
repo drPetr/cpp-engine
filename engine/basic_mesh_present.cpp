@@ -1,5 +1,5 @@
 #include "basic_mesh_present.h"
-#include <core/assert.h>
+#include <core/assert.hpp>
 namespace engine {
 
 /* present_vertex::vertex_attrib_type_size */

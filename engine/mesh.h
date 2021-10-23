@@ -1,7 +1,7 @@
 #pragma once
 #include "basic_mesh.h"
-#include <core/math.h>
-using namespace engine::math;
+#include <core/math.hpp>
+using namespace engine::core::math;
 namespace engine {
 
 /* type of vertex used in the mesh */

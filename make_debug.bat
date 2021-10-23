@@ -1,2 +1,2 @@
 if not exist "debug" mkdir "debug"
-make compile_flags="-Wall -Wextra -Wpedantic -Wno-cast-function-type -std=c++1z -DDEBUG" include_libs="-lOpengl32 -lglu32 -lGdi32 -L../3rd_party/ -ljpeg -lpng -lzlib " --directory="debug" --makefile=../makefile
+make compile_flags="-Wall -Wextra -Wno-cast-function-type -Wctor-dtor-privacy -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Wsign-promo -Wduplicated-branches -Wduplicated-cond -Wshadow=compatible-local -Wcast-qual -Wzero-as-null-pointer-constant -Wextra-semi -Wlogical-op -std=c++17 -DDEBUG" include_libs="-lOpengl32 -lglu32 -lGdi32 -L../3rd_party/ -ljpeg -lpng -lzlib " --directory="debug" --makefile=../makefile
