@@ -5,17 +5,20 @@
 namespace engine
 {
 
-class common {
+class common
+{
 public:
     static ostream      &error();
     static ostream      &log();
-};
+}; /* class common */
 
-inline ostream &common::error() {
+inline ostream &common::error()
+{
     return std::cerr;
 }
 
-inline ostream &common::log() {
+inline ostream &common::log()
+{
     return std::cout;
 }
 

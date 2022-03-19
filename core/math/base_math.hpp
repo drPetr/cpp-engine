@@ -15,12 +15,20 @@ struct sincos_t
 
 inline const float pi = 3.14159265358979323846;
 
-template<class T> inline T  min( T &x, T &y, T &z );
-template<class T> inline T  min( T &x, T &y );
-template<class T> inline T  max( T &x, T &y, T &z );
-template<class T> inline T  max( T &x, T &y );
-template<class T> inline T  sign( T a );
-template<class T> inline T  squr( T a );
+#ifdef min
+#undef min
+#endif
+
+#ifdef max
+#undef max
+#endif
+
+template <class T> T    min( T &x, T &y, T &z );
+template <class T> T    min( T &x, T &y );
+template <class T> T    max( T &x, T &y, T &z );
+template <class T> T    max( T &x, T &y );
+template <class T> T    sign( T a );
+template <class T> T    squr( T a );
 
 
 inline float            abs( float a );
@@ -49,43 +57,43 @@ inline int              clamp( int val, int min, int max );
 
 
 /* min */
-template<class T>
-inline T min( T &x, T &y, T &z )
+template <class T>
+T min( T &x, T &y, T &z )
 {
     return (x < y) ? ( (x < z) ? x : z ) : ( (y < z) ? y : z );
 }
 
 /* min */
-template<class T>
-inline T min( T &x, T &y )
+template <class T>
+T min( T &x, T &y )
 {
     return x < y ? x : y;
 }
 
 /* max */
-template<class T>
-inline T max( T &x, T &y, T &z )
+template <class T>
+T max( T &x, T &y, T &z )
 { 
     return (x > y) ? ( (x > z) ? x : z ) : ( (y > z) ? y : z );
 }
 
 /* max */
-template<class T>
-inline T max( T &x, T &y )
+template <class T>
+T max( T &x, T &y )
 { 
     return x > y ? x : y;
 }
 
 /* sign */
-template<class T>
-inline T sign( T a )
+template <class T>
+T sign( T a )
 {
     return (a > 0) ? 1 : ( (a < 0) ? -1 : 0 ); 
 }
 
 /* squr */
-template<class T>
-inline T squr( T a )
+template <class T>
+T squr( T a )
 {
     return a * a;
 }
@@ -104,87 +112,87 @@ inline float abs( float a )
 * http://graphics.stanford.edu/~seander/bithacks.html#IntegerAbs */
 inline int abs ( int a )
 {
-    int mask = a >> (sizeof(int) * 8 - 1);
+    auto mask = a >> (sizeof(int) * 8 - 1);
     return (a + mask) ^ mask;
 }
 
 /* abs */
 inline long long int abs( long long int a )
 {
-    int mask = a >> (sizeof(long long int) * 8 - 1);
+    auto mask = a >> (sizeof(long long int) * 8 - 1);
     return (a + mask) ^ mask;
 }
 
 /* sqrt */
 inline float sqrt( float a )
 {
-    return sqrtf( a );
+    return sqrtf(a);
 }
 
 /* sin */
 inline float sin( float a )
 {
-    return sinf( a );
+    return sinf(a);
 }
 
 /* cos */
 inline float cos( float a )
 {
-    return cosf( a );
+    return cosf(a);
 }
 
 /* sin_cos */
 inline sincos_t sin_cos( float a )
 {
-    return { sinf( a ), cosf( a ) };
+    return {sin(a), cos(a)};
 }
 
 /* tan */
 inline float tan( float a )
 {
-    return tanf( a );
+    return tanf(a);
 }
 
 /* asin */
 inline float asin( float a )
 {
-    return asinf( a );
+    return asinf(a);
 }
 
 /* acos */
 inline float acos( float a )
 {
-    return acosf( a );
+    return acosf(a);
 }
 
 /* atan */
 inline float atan( float a )
 {
-    return atanf( a );
+    return atanf(a);
 }
 
 /* atan2 */
 inline float atan2( float x, float y )
 {
-    return atan2f( x, y );
+    return atan2f(x, y);
 }
 
 /* log */
 inline float log( float a )
 {
-    return logf( a );
+    return logf(a);
 }
 
 /* exp */
 inline float exp( float a )
 {
-    return expf( a );
+    return expf(a);
 }
 
 /* pow */
 inline float pow( float base, float power )
 {
-    return powf( base, power );
+    return powf(base, power);
 }
 
 /* deg2rad */
@@ -202,35 +210,35 @@ inline float rad2deg( float a )
 /* floor */
 inline float floor( float a )
 {
-    return floorf( a );
+    return floorf(a);
 }
 
 /* ceil */
 inline float ceil( float a )
 {
-    return ceilf( a );
+    return ceilf(a);
 }
 
 /* frac */
 inline float frac( float a )
 {
-    return a - floorf( a );
+    return a - floorf(a);
 }
 
 /* round */
 inline float round( float a )
 {
-    return floorf( a + 0.5 );
+    return floorf(a + 0.5);
 }
 
 /* clamp */
 inline float clamp( float val, float min, float max )
 {
     math_asserta( min <= max, "min: %f; max: %f", min, max );
-    if( val < min ) {
+    if (val < min) {
         return min;
     }
-    if( val > max ) {
+    if (val > max) {
         return max;
     }
     return val;
@@ -240,10 +248,10 @@ inline float clamp( float val, float min, float max )
 inline int clamp( int val, int min, int max )
 {
     math_asserta( min <= max, "min: %d; max: %d", min, max );
-    if( val < min ) {
+    if (val < min) {
         return min;
     }
-    if( val > max ) {
+    if (val > max) {
         return max;
     }
     return val;

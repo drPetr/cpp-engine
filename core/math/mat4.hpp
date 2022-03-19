@@ -19,9 +19,8 @@ public:
     explicit        mat4( const type xx, const type xy, const type xz, const type xw,
                             const type yx, const type yy, const type yz, const type yw,
                             const type zx, const type zy, const type zz, const type zw,
-                            const type wx, const type wy, const type wz, const type ww 
-                    ) :
-                            x{xx, xy, xz, xw},
+                            const type wx, const type wy, const type wz, const type ww )
+                            : x{xx, xy, xz, xw},
                             y{yx, yy, yz, yw},
                             z{zx, zy, zz, zw},
                             w{wx, wy, wz, ww} {}

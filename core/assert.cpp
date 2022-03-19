@@ -3,26 +3,10 @@
 #include <cstdlib>
 #include <cstdarg>
 
-static void __assertion_failed(
-        const char *fail
-        , const char *expr
-        , const char *file
-        , int line
-        , const char *function
-        , const char *msg
-        , va_list argptr
-) __attribute__ ((noreturn));
-
 /* __assertion_failed */
 static void __assertion_failed( 
-        const char *fail
-        , const char *expr
-        , const char *file
-        , int line
-        , const char *function
-        , const char *msg
-        , va_list argptr
-)
+    const char *fail, const char *expr, const char *file,
+    int line, const char *function, const char *msg, va_list argptr)
 {
     fprintf( stderr, "%s\n\n", fail );
     fprintf( stderr, "File: %s, Line: %d\n", file, line );

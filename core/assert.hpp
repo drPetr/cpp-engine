@@ -12,14 +12,14 @@ void __impl_verify( int e, const char* expr, const char* file, int line, const c
 
 
 #define verify(e)   \
-        (!(e)?__impl_verify(static_cast<int>(!!(e)),#e,__FILE__,__LINE__,__FUNCTION__):((void)0))
+    (!(e)?__impl_verify(static_cast<int>(!!(e)),#e,__FILE__,__LINE__,__FUNCTION__):((void)0))
 
 /* assertion macros */
 #define always_asserta(e,fmt,...)   \
-        (!(e)?__impl_asserta(static_cast<int>(!!(e)),#e,__FILE__,__LINE__,__FUNCTION__,fmt,##__VA_ARGS__):((void)0))
+    (!(e)?__impl_asserta(static_cast<int>(!!(e)),#e,__FILE__,__LINE__,__FUNCTION__,fmt,##__VA_ARGS__):((void)0))
 
 #define always_assert(e)   \
-        (!(e)?__impl_assert(static_cast<int>(!!(e)),#e,__FILE__,__LINE__,__FUNCTION__):((void)0))
+    (!(e)?__impl_assert(static_cast<int>(!!(e)),#e,__FILE__,__LINE__,__FUNCTION__):((void)0))
 
 #define do_nothing()                    ((void)0)
 
@@ -55,4 +55,3 @@ void __impl_verify( int e, const char* expr, const char* file, int line, const c
 #   define container_asserta(e,fmt,...) do_nothing()
 #   define container_assert(e)          do_nothing()
 #endif /* CONTAINERS_ASSERT_ENABLED */
-

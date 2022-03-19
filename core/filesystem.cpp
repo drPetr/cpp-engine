@@ -11,11 +11,11 @@ bool filesystem::file_exists( const string &path ) {
     }
     return false;
 }
-
+#define RESUORCES_DIR "C:\\work\\cpp-engine\\resources\\"
 /* filesystem::read_contents */
 file_contents filesystem::read_contents( const string &path, size_t offset, size_t length ) {
     file_contents result;
-    std::ifstream file( path, std::ios::in | std::ios::binary );
+    std::ifstream file(RESUORCES_DIR + path, std::ios::in | std::ios::binary);
     result.success = file.is_open();
     if( result.success ) {
         /* calculate or clamp length of file */
@@ -43,12 +43,12 @@ file_contents filesystem::read_contents( const string &path, size_t offset, size
 
 /* filesystem::open_read */
 ifstream filesystem::open_read( const string &filename ) {
-    return ifstream( filename, std::ios::in | std::ios::binary );;
+    return ifstream(RESUORCES_DIR + filename, std::ios::in | std::ios::binary );
 }
 
 /* filesystem::open_write */
 ofstream filesystem::open_write( const string &filename ) {
-    return ofstream( filename, std::ios::out | std::ios::binary );;
+    return ofstream(RESUORCES_DIR + filename, std::ios::out | std::ios::binary );
 }
 
 } /* namespace engine::core */

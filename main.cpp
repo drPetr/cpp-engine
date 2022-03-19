@@ -22,6 +22,8 @@
 #include <core/unique_ptr.hpp>
 #include <cstdlib>
 #include <ctime>
+#pragma comment (lib, "opengl32.lib")
+
 using namespace engine::core::math;
 using namespace engine::core::input;
 using namespace engine::core;
@@ -62,8 +64,8 @@ public:
     void            set_title( const string &title );
     void            set_location( const point2d &point );
     void            set_size( const size2d &size );
-    const point2d   &get_location();
-    const size2d    &get_size();
+    const point2d   get_location();
+    const size2d    get_size();
 
     whandle_t       get_handle() const;
 
@@ -113,7 +115,6 @@ void window::create() {
         }
         wcexIsInit = true;
     }
-
     handle = CreateWindowEx(
         0,
         "__UserWindowClassName",
@@ -189,7 +190,7 @@ void window::set_size( const size2d &size ) {
 }
 
 /* window::get_location */
-const point2d &window::get_location() {
+const point2d window::get_location() {
     if( RECT rc; isCreate && GetClientRect( handle, &rc ) ) {
         rect.left() = rc.left;
         rect.top() = rc.top;
@@ -198,15 +199,14 @@ const point2d &window::get_location() {
 }
 
 /* window::get_size */
-const size2d &window::get_size() {
+const size2d window::get_size() {
     if( RECT rc; isCreate && GetClientRect( handle, &rc ) ) {
         rect.left() = rc.left;
         rect.right() = rc.right;
         rect.top() = rc.top;
         rect.bottom() = rc.bottom;
     }
-    auto s( rect.size() );
-    return std::move(s);
+    return rect.size();
 }
 
 /* window::get_handle */
@@ -289,9 +289,9 @@ opengl_render::opengl_render( const whandle_t handle ) {
 
 /* opengl_render::~opengl_render */
 opengl_render::~opengl_render() {
-    ::wglMakeCurrent( NULL, NULL );
-    ::wglDeleteContext( hrc );
-    ::ReleaseDC( hWnd, hdc );
+    wglMakeCurrent( NULL, NULL );
+    wglDeleteContext( hrc );
+    ReleaseDC( hWnd, hdc );
 }
 
 /* opengl_render::clear */
@@ -471,23 +471,29 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
     std::cout << "time: " << tm.get_elapsed_msec() << std::endl;*/
 
     //return 0;
-
     core::unique_ptr<window> w {new window()};
+
+    std::cout << "window created\n";
     //window *w = new window();
-    w->align_center();
     w->create();
+    //w->align_center();
+    
     w->show();
+
+    std::cout << "before rendering\n";
 
     opengl_render render( w->get_handle() );
 
+    std::cout << "renderer initialized\n";
 
 
     shader sh;
-    sh.load( "shader.vsh", "shader.fsh" );
+    sh.load( "shader.vsh", "shader.psh" );
+
     auto uniWorld = sh.get_uniform( "gWorld" );
     auto uniTex = sh.get_uniform( "gTex" );
 
-
+    std::cout << "sh loaded\n";
   
     const draw_vertex Verts[] = {
         {{0.000f,  0.000f,  1.000f},{0.0, 0.0}},
@@ -607,7 +613,7 @@ int WinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow
         locations[i].qu = q;
     }
 
-
+    std::cout << "run main loop\n";
     while( appIsRun ) {
         if( raw_input::is_key_pressed(VKRAW_ESCAPE) ) {
             appIsRun = false;

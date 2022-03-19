@@ -1,6 +1,5 @@
 #include "timer.hpp"
 #include <core/assert.hpp>
-#include <windows.h>
 
 namespace engine::core
 {
@@ -11,7 +10,7 @@ float timer::m_ticksToMsec {0.0};
 /* timer::timer */
 timer::timer()
 {
-    if( static bool isInit = false; !isInit ) {
+    if (static bool isInit = false; !isInit) {
         auto freq = timer::get_ticks_per_sec();
         core_asserta( freq >= 1000, "get_ticks_per_sec() returns %ld", static_cast<ticks>(freq) );
         m_ticksToSec = 1.0 / static_cast<float>(freq);

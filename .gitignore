@@ -1,9 +1,1 @@
-*.exe
-release/
-debug/
-3rd_party/jpeg-6b-obj/
-3rd_party/lpng1637-obj/
-3rd_party/zlib-1.2.11-obj/
-3rd_party/openal-soft-build/
-3rd_party/openal-soft/
-3rd_party/*.a
+build/
