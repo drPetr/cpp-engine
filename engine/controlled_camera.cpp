@@ -1,9 +1,13 @@
 #include "controlled_camera.h"
-using namespace engine::math;
+
+using namespace engine::core::input;
+
 namespace engine {
 
+using namespace core::math;
+
 /* controlled_camera::on_mouse_move */
-bool controlled_camera::on_mouse_move( const vec2 &move ) {
+bool controlled_camera::on_mouse_move( const point2d &move ) {
     auto m = move / 500;
     if( m.x ) {
         quat q( get_up(), m.x );
@@ -18,29 +22,28 @@ bool controlled_camera::on_mouse_move( const vec2 &move ) {
     return true;
 }
 
-/* controlled_camera::operator() */
-mat4 controlled_camera::operator()() {
+/* controlled_camera::update_movement */
+void controlled_camera::update_movement() {
     vec3 mov{0.0, 0.0, 0.0};
-    if( controlled_camera::is_key_pressed(VKRAW_W) ) {
+    if( raw_input::is_key_pressed(VKRAW_W) ) {
         mov += get_direction();
     }
-    if( controlled_camera::is_key_pressed(VKRAW_S) ) {
+    if( raw_input::is_key_pressed(VKRAW_S) ) {
         mov -= get_direction();
     }
-    if( controlled_camera::is_key_pressed(VKRAW_D) ) {
+    if( raw_input::is_key_pressed(VKRAW_D) ) {
         mov += get_right();
     }
-    if( controlled_camera::is_key_pressed(VKRAW_A) ) {
+    if( raw_input::is_key_pressed(VKRAW_A) ) {
         mov -= get_right();
     }
-    if( controlled_camera::is_key_pressed(VKRAW_SPACE) ) {
+    if( raw_input::is_key_pressed(VKRAW_SPACE) ) {
         mov += get_up();
     }
-    if( controlled_camera::is_key_pressed(VKRAW_SHIFT) ) {
+    if( raw_input::is_key_pressed(VKRAW_SHIFT) ) {
         mov -= get_up();
     }
-    move( mov * 0.07 );
-    return camera::operator()();
+    move( mov * 0.25 );
 }
 
 } /* namespace engine */

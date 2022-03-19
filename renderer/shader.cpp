@@ -1,11 +1,11 @@
 #include "shader.h"
-#include <core/assert.h>
-#include <core/common.h>
-#include <core/file_system.h>
+#include <core/assert.hpp>
+#include <core/common.hpp>
+#include <core/filesystem.hpp>
 namespace engine {
 
-vector<shader::shader_object> shader::shaderObjects;
-vector<shader::shader_program> shader::shaderPrograms;
+core::vector<shader::shader_object> shader::shaderObjects;
+core::vector<shader::shader_program> shader::shaderPrograms;
 
 /* shader::link_program */
 shader::idprog shader::link_program( const idobj vsh, const idobj fsh ) {
@@ -37,7 +37,7 @@ shader::idprog shader::link_program( const idobj vsh, const idobj fsh ) {
     if( !status ) {
         /* link program failed */
         char buffer[4096];
-        glGetProgramInfoLog( program, sizeof(buffer), NULL, buffer );
+        glGetProgramInfoLog( program, sizeof(buffer), nullptr, buffer );
         common::error() << "shader::link_program() error: glLinkProgram()" << 
                 std::endl << buffer << std::endl;
         fail = true;
@@ -48,7 +48,7 @@ shader::idprog shader::link_program( const idobj vsh, const idobj fsh ) {
     if( !status ) {
         /* validate program failed */
         char buffer[4096];
-        glGetProgramInfoLog( program, sizeof(buffer), NULL, buffer );
+        glGetProgramInfoLog( program, sizeof(buffer), nullptr, buffer );
         common::error() << "shader::link_program() error: glValidateProgram()" << 
                 std::endl << buffer << std::endl;
         fail = true;
@@ -115,7 +115,7 @@ shader::idobj shader::load_shader_object( const string &name, GLenum type ) {
 /* shader::load_shader */
 GLuint shader::load_shader( const string &name, GLenum type ) {
     /* load shader text */
-    auto [success, contents] = core::fs.read_contents( name );
+    auto [success, contents] = core::filesystem::read_contents( name );
     if( !success ) {
         common::error() << "shader::load_shader() error: file '" << name << "' not found." << std::endl;
         return 0;
@@ -138,7 +138,7 @@ GLuint shader::load_shader( const string &name, GLenum type ) {
     if( !status ) {
         /* compilation failed */
         char buffer[4096];
-        glGetShaderInfoLog( shader, sizeof(buffer), NULL, buffer );   
+        glGetShaderInfoLog( shader, sizeof(buffer), nullptr, buffer );   
         common::error() << "shader::load_shader() error: glCompileShader()" << 
                 std::endl << buffer << std::endl;
         glDeleteShader( shader );

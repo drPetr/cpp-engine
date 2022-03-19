@@ -1,73 +1,79 @@
 #include "camera.h"
 namespace engine {
-using namespace math;
+using namespace core::math;
 
-const mat4 MAT4_CAMERA_INITIAL { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 };
+const mat4 MAT4_CAMERA_INITIAL {1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0};
 
 /* camera::camera */
-camera::camera( const vec3 &pos, const vec3 &dir, const vec3 &up ) {
+camera::camera( const vec3 &pos, const vec3 &dir, const vec3 &up )
+{
     set_position( pos );
     set_direction( dir );
     set_up( up );
 }
 
 /* camera::rotate */
-void camera::rotate( const quat &q ) {
+void camera::rotate( const quat &q )
+{
     set_direction( q * get_direction() );
     set_up( q * get_up() );
-    needUpdate = true;
+    m_needUpdate = true;
 }
 
 /* camera::set_orientation */
-void camera::set_orientation( const vec3 &dir, const vec3 &up ) {
-    this->dir = dir;
-    this->dir.normalize();
-    this->up = up;
-    this->up.normalize();
-    this->right = this->dir.cross( this->up );
-    this->up = this->right.cross( this->dir );
-    needUpdate = true;
+void camera::set_orientation( const vec3 &dir, const vec3 &up )
+{
+    m_dir = dir;
+    m_dir.normalize();
+    m_up = up;
+    m_up.normalize();
+    m_right = m_dir.cross( m_up );
+    m_up = m_right.cross( m_dir );
+    m_needUpdate = true;
 }
 
 /* camera::set_direction */
-void camera::set_direction( const vec3 &dir ) {
-    this->dir = dir;
-    this->dir.normalize();
+void camera::set_direction( const vec3 &dir )
+{
+    m_dir = dir;
+    m_dir.normalize();
     /* update right */
-    right = this->dir.cross( up );
+    m_right = m_dir.cross( m_up );
     /* update up */
-    up = right.cross( this->dir );
-    needUpdate = true;
+    m_up = m_right.cross( m_dir );
+    m_needUpdate = true;
 }
 
 /* camera::set_up */
-void camera::set_up( const vec3 &up ) {
-    this->up = up;
-    this->up.normalize();
+void camera::set_up( const vec3 &up )
+{
+    m_up = up;
+    m_up.normalize();
     /* update right */
-    right = dir.cross( this->up );
+    m_right = m_dir.cross( m_up );
     /* update up */
-    this->up = right.cross( dir );
-    needUpdate = true;
+    m_up = m_right.cross( m_dir );
+    m_needUpdate = true;
 }
 
 /* camera::get_scale */
-mat4 camera::operator()() {
-    if( needUpdate ) {
-        out = mat;
+mat4 camera::operator()()
+{
+    if (m_needUpdate) {
+        m_out = m_mat;
         /* scaling */
-        out.x.x *= scale.x;
-        out.y.y *= scale.y;
-        out.z.z *= scale.z;
+        m_out.x.x *= m_scale.x;
+        m_out.y.y *= m_scale.y;
+        m_out.z.z *= m_scale.z;
         /* optimization (multiply camera matrix on position matrix) */
-        out.x.w = right.x * pos.x + right.y * pos.y + right.z * pos.z;
-        out.y.w = up.x * pos.x + up.y * pos.y + up.z * pos.z;
-        out.z.w = dir.x * pos.x + dir.y * pos.y + dir.z * pos.z;
-        out = projectionMat * out;
-        needUpdate = false;
-        return out;
+        m_out.x.w = m_right.x * m_pos.x + m_right.y * m_pos.y + m_right.z * m_pos.z;
+        m_out.y.w = m_up.x * m_pos.x + m_up.y * m_pos.y + m_up.z * m_pos.z;
+        m_out.z.w = m_dir.x * m_pos.x + m_dir.y * m_pos.y + m_dir.z * m_pos.z;
+        m_out = m_projectionMat * m_out;
+        m_needUpdate = false;
+        return m_out;
     }
-    return out;
+    return m_out;
 }
 
 } /* namespace engine */

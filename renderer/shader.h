@@ -1,7 +1,12 @@
 #pragma once
-#include <core/types.h>
+#include <core/types.hpp>
+#include <core/string.hpp>
+#include <core/vector.hpp>
 #include <renderer/opengl/gl.h>
 #include "uniform.h"
+
+using namespace engine::core;
+
 namespace engine {
 
 class shader {
@@ -53,8 +58,8 @@ private:
         idobj       fragmentShaderId;
     };
 
-    static vector<shader_object>    shaderObjects;
-    static vector<shader_program>   shaderPrograms;
+    static core::vector<shader_object>  shaderObjects;
+    static core::vector<shader_program> shaderPrograms;
 };
 
 /* shader::load_vertex_shader */

@@ -1,8 +1,8 @@
 #pragma once
-#include <core/raw_input.h>
+#include <core/input.hpp>
 namespace engine {
 
-class onoff_key : public input::raw_input {
+class onoff_key : public core::input::raw_input {
 public:
                     onoff_key( key dik ) : onOffDik{dik} {}
 

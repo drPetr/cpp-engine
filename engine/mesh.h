@@ -1,14 +1,16 @@
 #pragma once
 #include "basic_mesh.h"
-#include <core/math.h>
-using namespace engine::math;
+#include <core/math.hpp>
+using namespace engine::core::math;
 namespace engine {
 
 /* type of vertex used in the mesh */
 struct draw_vertex {
                 draw_vertex() {} /* empty constructor */
-                draw_vertex( const vec3 &pos ) : pos{pos} {}
+                draw_vertex( const vec3 &pos, const vec2 &uv ) : 
+                        pos{pos}, uv{uv} {}
     vec3        pos;
+    vec2        uv;
     static present_vertex   get_present_vertex();
 };
 
